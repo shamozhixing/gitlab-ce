@@ -51,6 +51,7 @@ Rails.application.routes.draw do
   # API
   API::API.logger Rails.logger
   mount API::API => '/api'
+  mount GrapeSwaggerRails::Engine => '/apidoc'
 
   constraint = lambda { |request| request.env['warden'].authenticate? and request.env['warden'].user.admin? }
   constraints constraint do

@@ -1,5 +1,7 @@
 Dir["#{Rails.root}/lib/api/*.rb"].each {|file| require file}
 
+require 'grape-swagger'
+
 module API
   class API < Grape::API
     include APIGuard
@@ -54,5 +56,23 @@ module API
     mount Keys
     mount Tags
     mount Triggers
+
+    add_swagger_documentation(
+      base_path: '/api',
+      api_version: 'v3',
+      hide_documentation_path: true,
+      authorizations: {
+          private_token_header: {
+            type: 'apiKey',
+            passAs: 'header',
+            keyname: 'PRIVATE_HEADER',
+          },
+          private_token_query: {
+            type: 'apiKey',
+            passAs: 'query',
+            keyname: 'private_token',
+          },
+      }
+    )
   end
 end

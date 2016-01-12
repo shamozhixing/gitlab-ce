@@ -1,21 +1,22 @@
 module API
   module Entities
     class UserSafe < Grape::Entity
-      expose :name, :username
+      expose :name, :username, documentation: { type: 'String' }
     end
 
     class UserBasic < UserSafe
-      expose :id, :state, :avatar_url
+      expose :id, documentation: { type: 'Integer' }
+      expose :state, :avatar_url, documentation: { type: 'String' }
 
-      expose :web_url do |user, options|
+      expose :web_url, documentation: { type: 'String' } do |user, options|
         Gitlab::Application.routes.url_helpers.user_url(user)
       end
     end
 
     class User < UserBasic
-      expose :created_at
-      expose :is_admin?, as: :is_admin
-      expose :bio, :skype, :linkedin, :twitter, :website_url
+      expose :created_at, documentation: { type: 'Date' }
+      expose :is_admin?, as: :is_admin, documentation: { type: 'Boolean' }
+      expose :bio, :skype, :linkedin, :twitter, :website_url, documentation: { type: 'String' }
     end
 
     class Identity < Grape::Entity
@@ -23,12 +24,14 @@ module API
     end
 
     class UserFull < User
-      expose :email
-      expose :theme_id, :color_scheme_id, :projects_limit, :current_sign_in_at
+      expose :email, documentation: { type: 'String' }
+      expose :theme_id, :color_scheme_id, documentation: { type: 'Integer' }
+      expose :projects_limit, documentation: { type: 'Integer' }
+      expose :current_sign_in_at, documentation: { type: 'Date' }
       expose :identities, using: Entities::Identity
-      expose :can_create_group?, as: :can_create_group
-      expose :can_create_project?, as: :can_create_project
-      expose :two_factor_enabled
+      expose :can_create_group?, as: :can_create_group, documentation: { type: 'Boolean' }
+      expose :can_create_project?, as: :can_create_project, documentation: { type: 'Boolean' }
+      expose :two_factor_enabled, documentation: { type: 'Boolean' }
     end
 
     class UserLogin < UserFull

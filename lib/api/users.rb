@@ -4,12 +4,14 @@ module API
     before { authenticate! }
 
     resource :users, requirements: { uid: /[0-9]*/, id: /[0-9]*/ } do
-      # Get a users list
-      #
-      # Example Request:
-      #  GET /users
-      #  GET /users?search=Admin
-      #  GET /users?username=root
+      desc 'Get a users lists' do
+        success Entities::UserFull
+      end
+      params do
+        optional :search, type: String
+        optional :username, type: String
+        optional :active, type: Boolean
+      end
       get do
         if params[:username].present?
           @users = User.where(username: params[:username])
@@ -27,12 +29,12 @@ module API
         end
       end
 
-      # Get a single user
-      #
-      # Parameters:
-      #   id (required) - The ID of a user
-      # Example Request:
-      #   GET /users/:id
+      desc 'Get a single user' do
+        success Entities::UserFull
+      end
+      params do
+        requires :id, type: Integer, desc: 'The ID of a user'
+      end
       get ":id" do
         @user = User.find(params[:id])
 
@@ -43,26 +45,18 @@ module API
         end
       end
 
-      # Create user. Available only for admin
-      #
-      # Parameters:
-      #   email (required)                  - Email
-      #   password (required)               - Password
-      #   name (required)                   - Name
-      #   username (required)               - Name
-      #   skype                             - Skype ID
-      #   linkedin                          - Linkedin
-      #   twitter                           - Twitter account
-      #   website_url                       - Website url
-      #   projects_limit                    - Number of projects user can create
-      #   extern_uid                        - External authentication provider UID
-      #   provider                          - External provider
-      #   bio                               - Bio
-      #   admin                             - User is admin - true or false (default)
-      #   can_create_group                  - User can create groups - true or false
-      #   confirm                           - Require user confirmation - true (default) or false
-      # Example Request:
-      #   POST /users
+      desc 'Create user. Available only for admin' do
+        success Entities::UserFull
+      end
+      params do
+        requires :email, type: String, desc: 'The email'
+        requires :password, type: String, desc: 'The password'
+        requires :name, type: String, desc: 'The name'
+        requires :username, type: String, desc: 'The username'
+        requires :skype, type: String, desc: 'The Skype ID'
+        optional :can_create_group, type: Boolean, desc: 'User can create groups'
+        optional :confirm, type: Boolean, desc: 'Require user confirmation. True by default'
+      end
       post do
         authenticated_as_admin!
         required_attributes! [:email, :password, :name, :username]
