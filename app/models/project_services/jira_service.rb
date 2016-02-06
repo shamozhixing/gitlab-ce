@@ -40,10 +40,40 @@ class JiraService < IssueTrackerService
   end
 
   def help
-    'Setting `project_url`, `issues_url` and `new_issue_url` will '\
-    'allow a user to easily navigate to the Jira issue tracker. See the '\
-    '[integration doc](http://doc.gitlab.com/ce/integration/external-issue-tracker.html) '\
-    'for details.'
+    # If you change something here, it also needs to be changed in the
+    # documentation as well: doc/project_services/jira.md
+    '
+For more details on how to set up the JIRA service, follow the
+[JIRA documentation](http://doc.gitlab.com/ce/project_services/jira.html).
+
+---
+
+- **Description:** A name for the issue tracker (to differentiate between
+  instances, for example). The default is **JIRA issue tracker**.
+- **Project URL:** The URL to the JIRA project which is being linked to this
+  GitLab project. It is of the form:
+  `https://<jira_host_url>/issues/?jql=project=<jira_project>`.
+- **Issues URL:**  The URL to the JIRA project issues overview for the project
+  that is linked to this GitLab project. It is of the form:
+  `https://<jira_host_url>/browse/:id`.
+  Leave `:id` as-is, it gets replaced by GitLab at runtime.
+- **New issue URL:** The URL to create a new issue in JIRA for the project
+  linked to this GitLab project. It is of the form:
+  `https://<jira_host_url>/secure/CreateIssue.jspa`.
+- **API URL:** The base URL of the JIRA API. It may be omitted, in which case
+  GitLab will automatically use API version `2` based on the `project url`.
+  It is of the form: `https://<jira_host_url>/rest/api/2`.
+- **Username:** The username of the JIRA user.
+- **Password:** The password of the JIRA user.
+- **JIRA issue transition:** This setting is very important to set up correctly.
+  It is the ID of a transition that moves issues to a closed state. You can
+  find this number under the JIRA workflow administration
+  (**Administration > Issues > Workflows**) by selecting **View** under
+  **Operations** of the desired workflow of your project. The ID of each state
+  can be found inside the parenthesis of each transition name under the
+  **Transitions (id)** column
+  ([see screenshot](http://doc.gitlab.com/ce/project_services/img/jira_issues_workflow.png)).
+  By default, this ID is set to `2`.'
   end
 
   def title
@@ -58,7 +88,7 @@ class JiraService < IssueTrackerService
     if self.properties && self.properties['description'].present?
       self.properties['description']
     else
-      'Jira issue tracker'
+      'JIRA issue tracker'
     end
   end
 
