@@ -3,6 +3,7 @@ module Banzai
     class PreProcessPipeline < BasePipeline
       def self.filters
         [
+          Filter::YamlFrontMatterFilter
         ]
       end
 
