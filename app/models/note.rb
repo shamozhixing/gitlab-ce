@@ -70,6 +70,7 @@ class Note < ActiveRecord::Base
   scope :fresh, ->{ order(created_at: :asc, id: :asc) }
   scope :inc_author_project, ->{ includes(:project, :author) }
   scope :inc_author, ->{ includes(:author) }
+  scope :with_diff, -> { where('st_diff IS NOT NULL') }
 
   scope :with_associations, -> do
     includes(:author, :noteable, :updated_by,
@@ -146,10 +147,7 @@ class Note < ActiveRecord::Base
   end
 
   def set_diff
-    # First lets find notes with same diff
-    # before iterating over all mr diffs
-    diff = diff_for_line_code unless for_merge_request?
-    diff ||= find_diff
+    diff = diff_for_line_code || find_diff
 
     self.st_diff = diff.to_hash if diff
   end
@@ -159,7 +157,9 @@ class Note < ActiveRecord::Base
   end
 
   def diff_for_line_code
-    Note.where(noteable_id: noteable_id, noteable_type: noteable_type, line_code: line_code).last.try(:diff)
+    self.class.
+      where(noteable: noteable, line_code: line_code).
+      with_diff.last.try(:diff)
   end
 
   # Check if such line of code exists in merge request diff
