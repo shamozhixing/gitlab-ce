@@ -17,6 +17,7 @@ issuable_created = false
     )
 
   initSearch: ->
+    Issuable.filterResults $('#issue_search_form')
     @timer = null
     $('#issue_search')
       .off 'keyup'
