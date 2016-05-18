@@ -330,4 +330,23 @@ describe 'Filter issues', feature: true do
       end
     end
   end
+
+  describe 'Filter issues persists from issues#index' do
+
+    before do
+      visit namespace_project_issues_path(project.namespace, project)
+
+      fill_in 'issue_search', with: 'test'
+    end
+
+    context 'filter field', js: true do
+      it 'should persist when switching issue status' do
+        find('.issues-state-filters a', text: 'Closed').click
+        find('.issues-state-filters a', text: 'Open').click
+
+        expect(find_field('issue_search').value).to eq 'test'
+      end
+    end
+
+  end  
 end
