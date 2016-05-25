@@ -1,7 +1,7 @@
 Rake::Task["spec"].clear if Rake::Task.task_defined?('spec')
 
 namespace :spec do
-  desc 'GitLab | Rspec | Run request specs'
+  desc 'GitLab | RSpec | Run request specs'
   task :api do
     cmds = [
       %W(rake gitlab:setup),
@@ -10,16 +10,17 @@ namespace :spec do
     run_commands(cmds)
   end
 
-  desc 'GitLab | Rspec | Run feature specs'
-  task :feature do
+  desc 'GitLab | RSpec | Run feature specs'
+  task :feature, [:split] do |task, args|
     cmds = [
       %W(rake gitlab:setup),
-      %W(rspec spec --tag @feature)
+      %W(rspec --).concat(split_feature_specs(args[:split]))
     ]
+
     run_commands(cmds)
   end
 
-  desc 'GitLab | Rspec | Run model specs'
+  desc 'GitLab | RSpec | Run model specs'
   task :models do
     cmds = [
       %W(rake gitlab:setup),
@@ -28,7 +29,7 @@ namespace :spec do
     run_commands(cmds)
   end
 
-  desc 'GitLab | Rspec | Run service specs'
+  desc 'GitLab | RSpec | Run service specs'
   task :services do
     cmds = [
       %W(rake gitlab:setup),
@@ -37,7 +38,7 @@ namespace :spec do
     run_commands(cmds)
   end
 
-  desc 'GitLab | Rspec | Run lib specs'
+  desc 'GitLab | RSpec | Run lib specs'
   task :lib do
     cmds = [
       %W(rake gitlab:setup),
@@ -46,7 +47,7 @@ namespace :spec do
     run_commands(cmds)
   end
 
-  desc 'GitLab | Rspec | Run other specs'
+  desc 'GitLab | RSpec | Run other specs'
   task :other do
     cmds = [
       %W(rake gitlab:setup),
@@ -68,5 +69,18 @@ end
 def run_commands(cmds)
   cmds.each do |cmd|
     system({'RAILS_ENV' => 'test', 'force' => 'yes'}, *cmd) or raise("#{cmd} failed!")
+  end
+end
+
+def split_feature_specs(option = nil)
+  files = Dir["spec/features/**/*_spec.rb"]
+  count = files.length
+
+  if option == 'first_half'
+    files[0...count/2]
+  elsif option == 'last_half'
+    files[count/2..-1]
+  else
+    []
   end
 end

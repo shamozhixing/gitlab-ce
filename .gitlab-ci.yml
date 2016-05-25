@@ -27,220 +27,226 @@ before_script:
 
 stages:
 - test
-- notifications
+# - notifications
 
-spec:feature:
+spec:feature:first_half:
   stage: test
   script:
     - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:feature
+    - RAILS_ENV=test SIMPLECOV=true bundle exec rake "spec:feature[first_half]"
 
-spec:api:
-  stage: test
-  script:
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:api
-
-spec:models:
-  stage: test
-  script:
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:models
-
-spec:lib:
-  stage: test
-  script:
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:lib
-
-spec:services:
-  stage: test
-  script:
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:services
-
-spec:other:
-  stage: test
-  script:
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:other
-
-spinach:project:half:
+spec:feature:last_half:
   stage: test
   script:
     - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:project:half
+    - RAILS_ENV=test SIMPLECOV=true bundle exec rake "spec:feature[last_half]"
 
-spinach:project:rest:
-  stage: test
-  script:
-    - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:project:rest
+# spec:api:
+#   stage: test
+#   script:
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:api
 
-spinach:other:
-  stage: test
-  script:
-    - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:other
+# spec:models:
+#   stage: test
+#   script:
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:models
 
-teaspoon:
-  stage: test
-  script:
-    - RAILS_ENV=test bundle exec teaspoon
+# spec:lib:
+#   stage: test
+#   script:
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:lib
 
-rubocop:
-  stage: test
-  script:
-    - bundle exec rubocop
+# spec:services:
+#   stage: test
+#   script:
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:services
 
-scss-lint:
-  stage: test
-  script:
-    - bundle exec rake scss_lint
+# spec:other:
+#   stage: test
+#   script:
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:other
 
-brakeman:
-  stage: test
-  script:
-    - bundle exec rake brakeman
+# spinach:project:half:
+#   stage: test
+#   script:
+#     - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:project:half
 
-flog:
-  stage: test
-  script:
-    - bundle exec rake flog
+# spinach:project:rest:
+#   stage: test
+#   script:
+#     - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:project:rest
 
-flay:
-  stage: test
-  script:
-    - bundle exec rake flay
+# spinach:other:
+#   stage: test
+#   script:
+#     - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:other
 
-bundler:audit:
-  stage: test
-  only:
-    - master
-  script:
-    - "bundle exec bundle-audit check --update --ignore OSVDB-115941"
+# teaspoon:
+#   stage: test
+#   script:
+#     - RAILS_ENV=test bundle exec teaspoon
 
-db-migrate-reset:
-  stage: test
-  script:
-    - RAILS_ENV=test bundle exec rake db:migrate:reset
+# rubocop:
+#   stage: test
+#   script:
+#     - bundle exec rubocop
 
-# Ruby 2.2 jobs
+# scss-lint:
+#   stage: test
+#   script:
+#     - bundle exec rake scss_lint
 
-spec:feature:ruby22:
-  stage: test
-  image: ruby:2.2
-  only:
-    - master
-  script:
-    - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:feature
-  cache:
-    key: "ruby22"
-    paths:
-    - vendor
+# brakeman:
+#   stage: test
+#   script:
+#     - bundle exec rake brakeman
 
-spec:api:ruby22:
-  stage: test
-  image: ruby:2.2
-  only:
-  - master
-  script:
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:api
-  cache:
-    key: "ruby22"
-    paths:
-    - vendor
+# flog:
+#   stage: test
+#   script:
+#     - bundle exec rake flog
 
-spec:models:ruby22:
-  stage: test
-  image: ruby:2.2
-  only:
-  - master
-  script:
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:models
-  cache:
-    key: "ruby22"
-    paths:
-    - vendor
+# flay:
+#   stage: test
+#   script:
+#     - bundle exec rake flay
 
-spec:lib:ruby22:
-  stage: test
-  image: ruby:2.2
-  only:
-  - master
-  script:
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:lib
-  cache:
-    key: "ruby22"
-    paths:
-    - vendor
+# bundler:audit:
+#   stage: test
+#   only:
+#     - master
+#   script:
+#     - "bundle exec bundle-audit check --update --ignore OSVDB-115941"
 
-spec:services:ruby22:
-  stage: test
-  image: ruby:2.2
-  only:
-  - master
-  script:
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:services
-  cache:
-    key: "ruby22"
-    paths:
-    - vendor
+# db-migrate-reset:
+#   stage: test
+#   script:
+#     - RAILS_ENV=test bundle exec rake db:migrate:reset
 
-spec:other:ruby22:
-  stage: test
-  image: ruby:2.2
-  only:
-  - master
-  script:
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:other
-  cache:
-    key: "ruby22"
-    paths:
-    - vendor
+# # Ruby 2.2 jobs
 
-spinach:project:half:ruby22:
-  stage: test
-  image: ruby:2.2
-  only:
-  - master
-  script:
-    - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:project:half
-  cache:
-    key: "ruby22"
-    paths:
-    - vendor
+# spec:feature:ruby22:
+#   stage: test
+#   image: ruby:2.2
+#   only:
+#     - master
+#   script:
+#     - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:feature
+#   cache:
+#     key: "ruby22"
+#     paths:
+#     - vendor
 
-spinach:project:rest:ruby22:
-  stage: test
-  image: ruby:2.2
-  only:
-  - master
-  script:
-    - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:project:rest
-  cache:
-    key: "ruby22"
-    paths:
-    - vendor
+# spec:api:ruby22:
+#   stage: test
+#   image: ruby:2.2
+#   only:
+#   - master
+#   script:
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:api
+#   cache:
+#     key: "ruby22"
+#     paths:
+#     - vendor
 
-spinach:other:ruby22:
-  stage: test
-  image: ruby:2.2
-  only:
-  - master
-  script:
-    - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
-    - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:other
-  cache:
-    key: "ruby22"
-    paths:
-    - vendor
+# spec:models:ruby22:
+#   stage: test
+#   image: ruby:2.2
+#   only:
+#   - master
+#   script:
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:models
+#   cache:
+#     key: "ruby22"
+#     paths:
+#     - vendor
 
-notify:slack:
-  stage: notifications
-  script:
-    - ./scripts/notify_slack.sh "#builds" "Build on \`$CI_BUILD_REF_NAME\` failed! Commit \`$(git log -1 --oneline)\` See <https://gitlab.com/gitlab-org/$(basename "$PWD")/commit/"$CI_BUILD_REF"/builds>"
-  when: on_failure
-  only:
-    - master@gitlab-org/gitlab-ce
-    - tags@gitlab-org/gitlab-ce
-    - master@gitlab-org/gitlab-ee
-    - tags@gitlab-org/gitlab-ee
+# spec:lib:ruby22:
+#   stage: test
+#   image: ruby:2.2
+#   only:
+#   - master
+#   script:
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:lib
+#   cache:
+#     key: "ruby22"
+#     paths:
+#     - vendor
+
+# spec:services:ruby22:
+#   stage: test
+#   image: ruby:2.2
+#   only:
+#   - master
+#   script:
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:services
+#   cache:
+#     key: "ruby22"
+#     paths:
+#     - vendor
+
+# spec:other:ruby22:
+#   stage: test
+#   image: ruby:2.2
+#   only:
+#   - master
+#   script:
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spec:other
+#   cache:
+#     key: "ruby22"
+#     paths:
+#     - vendor
+
+# spinach:project:half:ruby22:
+#   stage: test
+#   image: ruby:2.2
+#   only:
+#   - master
+#   script:
+#     - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:project:half
+#   cache:
+#     key: "ruby22"
+#     paths:
+#     - vendor
+
+# spinach:project:rest:ruby22:
+#   stage: test
+#   image: ruby:2.2
+#   only:
+#   - master
+#   script:
+#     - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:project:rest
+#   cache:
+#     key: "ruby22"
+#     paths:
+#     - vendor
+
+# spinach:other:ruby22:
+#   stage: test
+#   image: ruby:2.2
+#   only:
+#   - master
+#   script:
+#     - RAILS_ENV=test bundle exec rake assets:precompile 2>/dev/null
+#     - RAILS_ENV=test SIMPLECOV=true bundle exec rake spinach:other
+#   cache:
+#     key: "ruby22"
+#     paths:
+#     - vendor
+
+# notify:slack:
+#   stage: notifications
+#   script:
+#     - ./scripts/notify_slack.sh "#builds" "Build on \`$CI_BUILD_REF_NAME\` failed! Commit \`$(git log -1 --oneline)\` See <https://gitlab.com/gitlab-org/$(basename "$PWD")/commit/"$CI_BUILD_REF"/builds>"
+#   when: on_failure
+#   only:
+#     - master@gitlab-org/gitlab-ce
+#     - tags@gitlab-org/gitlab-ce
+#     - master@gitlab-org/gitlab-ee
+#     - tags@gitlab-org/gitlab-ee
