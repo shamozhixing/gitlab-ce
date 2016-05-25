@@ -17,7 +17,7 @@ issuable_created = false
     )
 
   initSearch: ->
-    unless $('#issue_search_form').attr('action') is undefined
+    if $('#issue_search_form').attr('action')?
       Issuable.filterResults $('#issue_search_form')
 
     @timer = null
