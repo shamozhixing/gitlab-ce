@@ -17,6 +17,9 @@ issuable_created = false
     )
 
   initSearch: ->
+    if $('#issue_search').val().length != 0
+      Issuable.filterResults $('.js-filter-form')
+
     @timer = null
     $('#issue_search')
       .off 'keyup'
