@@ -337,8 +337,6 @@ describe 'Filter issues', feature: true do
       visit namespace_project_issues_path(project.namespace, project)
 
       fill_in 'issue_search', with: 'test'
-
-      sleep 1
     end
 
     context 'filter field', js: true do
