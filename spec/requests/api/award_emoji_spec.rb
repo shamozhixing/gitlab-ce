@@ -4,8 +4,7 @@ describe API::API, api: true  do
   include ApiHelpers
   let(:user)            { create(:user) }
   let!(:project)        { create(:project) }
-  let(:issue)           { create(:issue, project: project, author: user) }
-  let!(:award_emoji)    { create(:award_emoji, awardable: issue, user: user) }
+
   let!(:merge_request)  { create(:merge_request, source_project: project, target_project: project) }
   let!(:downvote)       { create(:award_emoji, :downvote, awardable: merge_request, user: user) }
   let!(:note)           { create(:note, project: project, noteable: issue) }
@@ -14,6 +13,9 @@ describe API::API, api: true  do
 
   describe "GET /projects/:id/awardable/:awardable_id/award_emoji" do
     context 'on an issue' do
+      let(:issue)           { create(:issue, project: project, author: user) }
+      let!(:award_emoji)    { create(:award_emoji, awardable: issue, user: user) }
+
       it "returns an array of award_emoji" do
         get api("/projects/#{project.id}/issues/#{issue.id}/award_emoji", user)
 
@@ -37,6 +39,10 @@ describe API::API, api: true  do
         expect(json_response).to be_an Array
         expect(json_response.first['name']).to eq(downvote.name)
       end
+    end
+
+    context 'on a snippet' do
+      it 'returns the awarded '
     end
 
     context 'when the user has no access' do
