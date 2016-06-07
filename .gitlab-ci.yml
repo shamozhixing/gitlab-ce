@@ -1,4 +1,4 @@
-image: "ruby:2.1"
+image: "registry.gitlab.com/gitlab-org/gitlab-build-images:ruby-2.1"
 
 cache:
   key: "ruby21"
@@ -140,7 +140,7 @@ spinach 9 10: *spinach-knapsack
 
 # Execute all testing suites against Ruby 2.3
 .ruby-23: &ruby-23
-  image: "ruby:2.3"
+  image: "registry.gitlab.com/gitlab-org/gitlab-build-images:ruby-2.3"
   <<: *use-db
   only:
     - master
