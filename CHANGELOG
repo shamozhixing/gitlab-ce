@@ -14,6 +14,7 @@ v 8.10.0 (unreleased)
   - Check for conflicts with existing Project's wiki path when creating a new project.
   - Add API endpoint for a group issues !4520 (mahcsig)
   - Allow [ci skip] to be in any case and allow [skip ci]. !4785 (simon_w)
+  - Fixes error on raw build trace download for old builds stored in database
 
 v 8.9.3 (unreleased)
   - Fix encrypted data backwards compatibility after upgrading attr_encrypted gem
