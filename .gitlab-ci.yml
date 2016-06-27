@@ -195,6 +195,7 @@ rake flog: *exec
 rake flay: *exec
 rake db:migrate:reset: *exec
 license_finder: *exec
+mdl doc: *exec
 
 bundler:audit:
   stage: test
