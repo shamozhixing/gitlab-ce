@@ -287,6 +287,22 @@
       $('.page-with-sidebar').toggleClass('page-sidebar-collapsed page-sidebar-expanded').removeClass('page-sidebar-pinned');
       $('.navbar-fixed-top').removeClass('header-pinned-nav');
     }
+
+    menuResizeTimer =  null
+    $window.off('resize.nav')
+      .on('resize.nav', function () {
+        clearTimeout(menuResizeTimer)
+        setTimeout(function () {
+          if($window.width() < 1280 && $.cookie('pin_nav') !== 'true') {
+            $.cookie('pin_nav', 'false', { path: '/' })
+            $('.page-with-sidebar')
+              .toggleClass('page-sidebar-collapsed page-sidebar-expanded')
+              .removeClass('page-sidebar-pinned')
+            $('.navbar-fixed-top').removeClass('header-pinned-nav')
+          }
+        }, 250);
+      });
+
     return $document.off('click', '.js-nav-pin').on('click', '.js-nav-pin', function(e) {
       var $page, $pinBtn, $tooltip, $topNav, doPinNav, tooltipText;
       e.preventDefault();
