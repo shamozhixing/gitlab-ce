@@ -3,7 +3,6 @@ image: "registry.gitlab.com/gitlab-org/gitlab-build-images:ruby-2.1"
 cache:
   key: "ruby21"
   paths:
-  - vendor/apt
   - vendor/ruby
 
 variables:
@@ -147,7 +146,6 @@ spinach 9 10: *spinach-knapsack
   cache:
     key: "ruby-23"
     paths:
-      - vendor/apt
       - vendor/ruby
 
 .rspec-knapsack-ruby23: &rspec-knapsack-ruby23
