@@ -69,14 +69,15 @@ towards getting your issue resolved.
 Issues and merge requests should be in English and contain appropriate language
 for audiences of all ages.
 
+For more information on our issue triage policies, see our [Issue Triage Policies][issue-triage].
+
 ## Helping others
 
 Please help other GitLab users when you can. The channels people will reach out
 on can be found on the [getting help page][getting-help].
 
 Sign up for the mailing list, answer GitLab questions on StackOverflow or
-respond in the IRC channel. You can also sign up on [CodeTriage][codetriage] to help with
-the remaining issues on the GitHub issue tracker.
+respond in the IRC channel.
 
 ## I want to contribute!
 
@@ -508,7 +509,6 @@ available at [http://contributor-covenant.org/version/1/1/0/](http://contributor
 
 [core team]: https://about.gitlab.com/core-team/
 [getting-help]: https://about.gitlab.com/getting-help/
-[codetriage]: http://www.codetriage.com/gitlabhq/gitlabhq
 [up-for-grabs]: https://gitlab.com/gitlab-org/gitlab-ce/issues?label_name=up-for-grabs
 [medium-up-for-grabs]: https://medium.com/@kentcdodds/first-timers-only-78281ea47455
 [ce-tracker]: https://gitlab.com/gitlab-org/gitlab-ce/issues
@@ -533,3 +533,4 @@ available at [http://contributor-covenant.org/version/1/1/0/](http://contributor
 [free Antetype viewer (Mac OSX only)]: https://itunes.apple.com/us/app/antetype-viewer/id824152298?mt=12
 [`gitlab8.atype` file]: https://gitlab.com/gitlab-org/gitlab-design/tree/master/current/
 [license-finder-doc]: doc/development/licensing.md
+[issue-triage]: doc/development/issue_triage.md
