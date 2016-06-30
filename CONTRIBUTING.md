@@ -69,7 +69,7 @@ towards getting your issue resolved.
 Issues and merge requests should be in English and contain appropriate language
 for audiences of all ages.
 
-For more information on our issue triage policies, see our [Issue Triage Policies][issue-triage].
+See our [Issue Triage Policies][issue-triage] for more information.
 
 ## Helping others
 
