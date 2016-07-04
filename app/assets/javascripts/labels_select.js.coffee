@@ -24,6 +24,12 @@ class @LabelsSelect
       $newLabelError = $('.js-label-error')
       $colorPreview = $('.js-dropdown-label-color-preview')
       $newLabelCreateButton = $('.js-new-label-btn')
+      initialSelected = $dropdown
+        .closest('.selectbox')
+        .find("input[name='#{$dropdown.data('field-name')}']")
+        .map(->
+          @value
+        ).get()
 
       $newLabelError.hide()
       $loading = $block.find('.block-loading').fadeOut()
@@ -123,45 +129,47 @@ class @LabelsSelect
           .map(->
             @value
           ).get()
-        data = {}
-        data[abilityName] = {}
-        data[abilityName].label_ids = selected
-        if not selected.length
-          data[abilityName].label_ids = ['']
-        $loading.fadeIn()
-        $dropdown.trigger('loading.gl.dropdown')
-        $.ajax(
-          type: 'PUT'
-          url: issueUpdateURL
-          dataType: 'JSON'
-          data: data
-        ).done (data) ->
-          $loading.fadeOut()
-          $dropdown.trigger('loaded.gl.dropdown')
-          $selectbox.hide()
-          data.issueURLSplit = issueURLSplit
-          labelCount = 0
-          if data.labels.length
-            template = labelHTMLTemplate(data)
-            labelCount = data.labels.length
-          else
-            template = labelNoneHTMLTemplate
-          $value
-            .removeAttr('style')
-            .html(template)
-          $sidebarCollapsedValue.text(labelCount)
 
-          $('.has-tooltip', $value).tooltip(container: 'body')
+        unless _(initialSelected).isEqual(selected)
+          initialSelected = selected
+          data = {}
+          data[abilityName] = {}
+          data[abilityName].label_ids = selected
+          if not selected.length
+            data[abilityName].label_ids = ['']
+          $loading.fadeIn()
+          $dropdown.trigger('loading.gl.dropdown')
+          $.ajax(
+            type: 'PUT'
+            url: issueUpdateURL
+            dataType: 'JSON'
+            data: data
+          ).done (data) ->
+            $loading.fadeOut()
+            $dropdown.trigger('loaded.gl.dropdown')
+            $selectbox.hide()
+            data.issueURLSplit = issueURLSplit
+            labelCount = 0
+            if data.labels.length
+              template = labelHTMLTemplate(data)
+              labelCount = data.labels.length
+            else
+              template = labelNoneHTMLTemplate
+            $value
+              .removeAttr('style')
+              .html(template)
+            $sidebarCollapsedValue.text(labelCount)
 
-          $value
-            .find('a')
-            .each((i) ->
-              setTimeout(=>
-                gl.animate.animate($(@), 'pulse')
-              ,200 * i
+            $('.has-tooltip', $value).tooltip(container: 'body')
+
+            $value
+              .find('a')
+              .each((i) ->
+                setTimeout(=>
+                  gl.animate.animate($(@), 'pulse')
+                ,200 * i
+                )
               )
-            )
-
 
       $dropdown.glDropdown(
         data: (term, callback) ->
