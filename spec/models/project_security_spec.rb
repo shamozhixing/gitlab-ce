@@ -14,11 +14,11 @@ describe Project, models: true do
       @abilities << Ability
     end
 
-    let(:guest_actions) { Ability.project_guest_rules }
-    let(:report_actions) { Ability.project_report_rules }
-    let(:dev_actions) { Ability.project_dev_rules }
-    let(:master_actions) { Ability.project_master_rules }
-    let(:owner_actions) { Ability.project_owner_rules }
+    let(:guest_actions) { ProjectAbilities.project_guest_rules }
+    let(:report_actions) { ProjectAbilities.project_report_rules }
+    let(:dev_actions) { ProjectAbilities.project_dev_rules }
+    let(:master_actions) { ProjectAbilities.project_master_rules }
+    let(:owner_actions) { ProjectAbilities.project_owner_rules }
 
     describe "Non member rules" do
       it "should deny for non-project users any actions" do

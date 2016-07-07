@@ -2,27 +2,35 @@ class Ability
   class << self
     # rubocop: disable Metrics/CyclomaticComplexity
     def allowed(user, subject)
-      return anonymous_abilities(user, subject) if user.nil?
-      return [] unless user.is_a?(User)
-      return [] if user.blocked?
+      if ability_class(subject)
+        ability_class(subject).abilities(user, subject)
+      else
+        return anonymous_abilities(user, subject) if user.nil?
+        return [] unless user.is_a?(User)
+        return [] if user.blocked?
 
-      case subject
-      when CommitStatus then commit_status_abilities(user, subject)
-      when Project then project_abilities(user, subject)
-      when Issue then issue_abilities(user, subject)
-      when Note then note_abilities(user, subject)
-      when ProjectSnippet then project_snippet_abilities(user, subject)
-      when PersonalSnippet then personal_snippet_abilities(user, subject)
-      when MergeRequest then merge_request_abilities(user, subject)
-      when Group then group_abilities(user, subject)
-      when Namespace then namespace_abilities(user, subject)
-      when GroupMember then group_member_abilities(user, subject)
-      when ProjectMember then project_member_abilities(user, subject)
-      when User then user_abilities
-      when ExternalIssue, Deployment, Environment then project_abilities(user, subject.project)
-      when Ci::Runner then runner_abilities(user, subject)
-      else []
-      end.concat(global_abilities(user))
+        case subject
+        when CommitStatus then commit_status_abilities(user, subject)
+        when Issue then issue_abilities(user, subject)
+        when Note then note_abilities(user, subject)
+        when ProjectSnippet then project_snippet_abilities(user, subject)
+        when PersonalSnippet then personal_snippet_abilities(user, subject)
+        when MergeRequest then merge_request_abilities(user, subject)
+        when Group then group_abilities(user, subject)
+        when Namespace then namespace_abilities(user, subject)
+        when GroupMember then group_member_abilities(user, subject)
+        when ProjectMember then project_member_abilities(user, subject)
+        when ExternalIssue, Deployment, Environment then project_abilities(user, subject.project)
+        when Ci::Runner then runner_abilities(user, subject)
+        else []
+        end.concat(global_abilities(user))
+      end
+    end
+
+    def ability_class(subject)
+      "#{subject.class}Abilities".constantize
+    rescue NameError
+      nil
     end
 
     # Given a list of users and a project this method returns the users that can
@@ -56,53 +64,16 @@ class Ability
       elsif subject.is_a?(CommitStatus)
         anonymous_commit_status_abilities(subject)
       elsif subject.is_a?(Project) || subject.respond_to?(:project)
-        anonymous_project_abilities(subject)
+        ProjectAbilities.abilities(user, subject)
       elsif subject.is_a?(Group) || subject.respond_to?(:group)
         anonymous_group_abilities(subject)
-      elsif subject.is_a?(User)
-        anonymous_user_abilities
-      else
-        []
-      end
-    end
-
-    def anonymous_project_abilities(subject)
-      project = if subject.is_a?(Project)
-                  subject
-                else
-                  subject.project
-                end
-
-      if project && project.public?
-        rules = [
-          :read_project,
-          :read_wiki,
-          :read_label,
-          :read_milestone,
-          :read_project_snippet,
-          :read_project_member,
-          :read_merge_request,
-          :read_note,
-          :read_pipeline,
-          :read_commit_status,
-          :read_container_image,
-          :download_code
-        ]
-
-        # Allow to read builds by anonymous user if guests are allowed
-        rules << :read_build if project.public_builds?
-
-        # Allow to read issues by anonymous user if issue is not confidential
-        rules << :read_issue unless subject.is_a?(Issue) && subject.confidential?
-
-        rules - project_disabled_features_rules(project)
       else
         []
       end
     end
 
     def anonymous_commit_status_abilities(subject)
-      rules = anonymous_project_abilities(subject.project)
+      rules = ProjectAbilities.abilities(nil, subject.project)
       # If subject is Ci::Build which inherits from CommitStatus filter the abilities
       rules = filter_build_abilities(rules) if subject.is_a?(Ci::Build)
       rules
@@ -138,10 +109,6 @@ class Ability
       end
     end
 
-    def anonymous_user_abilities
-      [:read_user] unless restricted_public_level?
-    end
-
     def global_abilities(user)
       rules = []
       rules << :create_group if user.can_create_group
@@ -150,162 +117,7 @@ class Ability
     end
 
     def project_abilities(user, project)
-      rules = []
-      key = "/user/#{user.id}/project/#{project.id}"
-
-      RequestStore.store[key] ||= begin
-        # Push abilities on the users team role
-        rules.push(*project_team_rules(project.team, user))
-
-        owner = user.admin? ||
-                project.owner == user ||
-                (project.group && project.group.has_owner?(user))
-
-        if owner
-          rules.push(*project_owner_rules)
-        end
-
-        if project.public? || (project.internal? && !user.external?)
-          rules.push(*public_project_rules)
-
-          # Allow to read builds for internal projects
-          rules << :read_build if project.public_builds?
-
-          unless owner || project.team.member?(user) || project_group_member?(project, user)
-            rules << :request_access
-          end
-        end
-
-        if project.archived?
-          rules -= project_archived_rules
-        end
-
-        rules - project_disabled_features_rules(project)
-      end
-    end
-
-    def project_team_rules(team, user)
-      # Rules based on role in project
-      if team.master?(user)
-        project_master_rules
-      elsif team.developer?(user)
-        project_dev_rules
-      elsif team.reporter?(user)
-        project_report_rules
-      elsif team.guest?(user)
-        project_guest_rules
-      else
-        []
-      end
-    end
-
-    def public_project_rules
-      @public_project_rules ||= project_guest_rules + [
-        :download_code,
-        :fork_project,
-        :read_commit_status,
-        :read_pipeline
-      ]
-    end
-
-    def project_guest_rules
-      @project_guest_rules ||= [
-        :read_project,
-        :read_wiki,
-        :read_issue,
-        :read_label,
-        :read_milestone,
-        :read_project_snippet,
-        :read_project_member,
-        :read_merge_request,
-        :read_note,
-        :create_project,
-        :create_issue,
-        :create_note,
-        :upload_file
-      ]
-    end
-
-    def project_report_rules
-      @project_report_rules ||= project_guest_rules + [
-        :download_code,
-        :fork_project,
-        :create_project_snippet,
-        :update_issue,
-        :admin_issue,
-        :admin_label,
-        :read_commit_status,
-        :read_build,
-        :read_container_image,
-        :read_pipeline,
-        :read_environment,
-        :read_deployment
-      ]
-    end
-
-    def project_dev_rules
-      @project_dev_rules ||= project_report_rules + [
-        :admin_merge_request,
-        :update_merge_request,
-        :create_commit_status,
-        :update_commit_status,
-        :create_build,
-        :update_build,
-        :create_pipeline,
-        :update_pipeline,
-        :create_merge_request,
-        :create_wiki,
-        :push_code,
-        :create_container_image,
-        :update_container_image,
-        :create_environment,
-        :create_deployment
-      ]
-    end
-
-    def project_archived_rules
-      @project_archived_rules ||= [
-        :create_merge_request,
-        :push_code,
-        :push_code_to_protected_branches,
-        :update_merge_request,
-        :admin_merge_request
-      ]
-    end
-
-    def project_master_rules
-      @project_master_rules ||= project_dev_rules + [
-        :push_code_to_protected_branches,
-        :update_project_snippet,
-        :update_environment,
-        :update_deployment,
-        :admin_milestone,
-        :admin_project_snippet,
-        :admin_project_member,
-        :admin_merge_request,
-        :admin_note,
-        :admin_wiki,
-        :admin_project,
-        :admin_commit_status,
-        :admin_build,
-        :admin_container_image,
-        :admin_pipeline,
-        :admin_environment,
-        :admin_deployment
-      ]
-    end
-
-    def project_owner_rules
-      @project_owner_rules ||= project_master_rules + [
-        :change_namespace,
-        :change_visibility_level,
-        :rename_project,
-        :remove_project,
-        :archive_project,
-        :remove_fork_project,
-        :destroy_merge_request,
-        :destroy_issue
-      ]
+      ProjectAbilities.abilities(user, project)
     end
 
     def project_disabled_features_rules(project)
@@ -538,10 +350,6 @@ class Ability
       end
     end
 
-    def user_abilities
-      [:read_user]
-    end
-
     def abilities
       @abilities ||= begin
         abilities = Six.new
@@ -551,10 +359,6 @@ class Ability
     end
 
     private
-
-    def restricted_public_level?
-      current_application_settings.restricted_visibility_levels.include?(Gitlab::VisibilityLevel::PUBLIC)
-    end
 
     def named_abilities(name)
       [
@@ -575,14 +379,6 @@ class Ability
       end
 
       rules
-    end
-
-    def project_group_member?(project, user)
-      project.group &&
-      (
-        project.group.members.exists?(user_id: user.id) ||
-        project.group.requesters.exists?(user_id: user.id)
-      )
     end
   end
 end
