@@ -42,7 +42,7 @@
   %span.hidden-xs.hidden-sm Commit
   = link_to @commit.id, namespace_project_commit_path(@project.namespace, @project, @commit), class: "monospace hidden-xs hidden-sm"
   = link_to @commit.short_id, namespace_project_commit_path(@project.namespace, @project, @commit), class: "monospace visible-xs-inline visible-sm-inline"
-  = clipboard_button(clipboard_text: @commit.id)
+  = clipboard_button(data: { clipboard_text: @commit.id })
   %span.cgray= pluralize(@commit.parents.count, "parent")
   - @commit.parents.each do |parent|
     = link_to parent.short_id, namespace_project_commit_path(@project.namespace, @project, parent), class: "monospace"

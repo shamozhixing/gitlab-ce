@@ -26,7 +26,7 @@
 .commit-info-row
   %span.light Commit
   = link_to @pipeline.sha, namespace_project_commit_path(@project.namespace, @project, @pipeline.sha), class: "monospace"
-  = clipboard_button(clipboard_text: @pipeline.sha)
+  = clipboard_button(data: { clipboard_text: @pipeline.sha })
 
 - if @commit
   .commit-box.content-block
