@@ -36,6 +36,7 @@ v 8.11.0 (unreleased)
   - Various redundant database indexes have been removed
   - Update `timeago` plugin to use multiple string/locale settings
   - Remove unused images (ClemMakesApps)
+  - API: Expose confidential issues (Robert Schilling)
   - Limit git rev-list output count to one in forced push check
   - Clean up unused routes (Josef Strzibny)
   - Fix issue on empty project to allow developers to only push to protected branches if given permission

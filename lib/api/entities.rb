@@ -199,6 +199,7 @@ module API
       expose :user_notes_count
       expose :upvotes, :downvotes
       expose :due_date
+      expose :confidential
     end
 
     class ExternalIssue < Grape::Entity

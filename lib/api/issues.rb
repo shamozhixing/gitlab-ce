@@ -142,12 +142,13 @@ module API
       #   labels (optional)       - The labels of an issue
       #   created_at (optional)   - Date time string, ISO 8601 formatted
       #   due_date (optional)     - Date time string in the format YEAR-MONTH-DAY
+      #   confidential (optional) - Boolean parameter if the issue should be confidential
       # Example Request:
       #   POST /projects/:id/issues
       post ':id/issues' do
         required_attributes! [:title]
 
-        keys = [:title, :description, :assignee_id, :milestone_id, :due_date]
+        keys = [:title, :description, :assignee_id, :milestone_id, :due_date, :confidential]
         keys << :created_at if current_user.admin? || user_project.owner == current_user
         attrs = attributes_for_keys(keys)
 
@@ -163,6 +164,12 @@ module API
         if issue.spam?
           render_api_error!({ error: 'Spam detected' }, 400)
         end
+
+        # Convert and filter out invalid confidential flags
+        attrs['confidential'] = to_boolean(attrs['confidential'])
+        attrs.delete('confidential') if attrs['confidential'].nil?
+
+        issue = ::Issues::CreateService.new(project, current_user, attrs).execute
 
         if issue.valid?
           # Find or create labels and attach to issue. Labels are valid because
@@ -190,12 +197,13 @@ module API
       #   state_event (optional) - The state event of an issue (close|reopen)
       #   updated_at (optional) - Date time string, ISO 8601 formatted
       #   due_date (optional)     - Date time string in the format YEAR-MONTH-DAY
+      #   confidential (optional) - Boolean parameter if the issue should be confidential
       # Example Request:
       #   PUT /projects/:id/issues/:issue_id
       put ':id/issues/:issue_id' do
         issue = user_project.issues.find(params[:issue_id])
         authorize! :update_issue, issue
-        keys = [:title, :description, :assignee_id, :milestone_id, :state_event, :due_date]
+        keys = [:title, :description, :assignee_id, :milestone_id, :state_event, :due_date, :confidential]
         keys << :updated_at if current_user.admin? || user_project.owner == current_user
         attrs = attributes_for_keys(keys)
 
@@ -203,6 +211,10 @@ module API
         if (errors = validate_label_params(params)).any?
           render_api_error!({ labels: errors }, 400)
         end
+
+        # Convert and filter out invalid confidential flags
+        attrs['confidential'] = to_boolean(attrs['confidential'])
+        attrs.delete('confidential') if attrs['confidential'].nil?
 
         issue = ::Issues::UpdateService.new(user_project, current_user, attrs).execute(issue)
 
