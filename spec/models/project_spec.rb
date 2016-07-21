@@ -161,14 +161,14 @@ describe Project, models: true do
     end
 
     describe 'project pending deletion' do
-      let!(:project_pending_deletion) do 
+      let!(:project_pending_deletion) do
         create(:empty_project,
-                                             pending_delete: true) 
+               pending_delete: true)
       end
-      let(:new_project) do 
+      let(:new_project) do
         build(:empty_project,
-                                name: project_pending_deletion.name,
-                                namespace: project_pending_deletion.namespace) 
+              name: project_pending_deletion.name,
+              namespace: project_pending_deletion.namespace)
       end
 
       before do
