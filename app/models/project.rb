@@ -11,6 +11,7 @@ class Project < ActiveRecord::Base
   include AfterCommitQueue
   include CaseSensitivity
   include TokenAuthenticatable
+  include ValidAttribute
 
   extend Gitlab::ConfigHelper
 
@@ -48,6 +49,8 @@ class Project < ActiveRecord::Base
       end
     end
   end
+
+  after_validation :check_pending_delete
 
   ActsAsTaggableOn.strict_case_match = true
   acts_as_taggable_on :tags
@@ -1260,5 +1263,19 @@ class Project < ActiveRecord::Base
     end
 
     shared_projects.any?
+  end
+
+  def check_pending_delete
+    return if valid_attribute?(:name) && valid_attribute?(:path)
+    return unless pending_delete_twin
+
+    errors.clear
+    errors.add(:base, "The project is still being deleted. Please try again later.")
+  end
+
+  def pending_delete_twin
+    return false unless path
+
+    Project.unscoped.where(pending_delete: true).find_with_namespace(path_with_namespace)
   end
 end
