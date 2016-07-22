@@ -88,7 +88,7 @@ describe Projects::CommitController do
     end
 
     describe "as diff" do
-      it "trigger workhorse to serve the request" do
+      it "triggers workhorse to serve the request" do
         go(id: commit.id, format: :diff)
 
         expect(response.headers[Gitlab::Workhorse::SEND_DATA_HEADER]).to start_with("git-diff:")
@@ -96,7 +96,7 @@ describe Projects::CommitController do
     end
 
     describe "as patch" do
-      it "should contain a git diff" do
+      it "triggers workhorse to serve the request" do
         go(id: commit.id, format: :patch)
 
         expect(response.headers[Gitlab::Workhorse::SEND_DATA_HEADER]).to start_with("git-format-patch:")

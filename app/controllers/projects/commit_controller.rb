@@ -25,7 +25,7 @@ class Projects::CommitController < Projects::ApplicationController
       format.diff do
         return render_404 unless @commit.diff_refs
 
-        send_git_diff(@project.repository, @commit.diff_refs)
+        send_git_diff @project.repository, @commit.diff_refs
       end
       format.patch do
         return render_404 unless @commit.diff_refs

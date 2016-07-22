@@ -18,6 +18,20 @@ module Gitlab
           head_sha == other.head_sha
       end
 
+      def workhorse_params
+        if @base_sha == @head_sha
+          {
+            'ShaFrom'   => '0' * 40, # blank sha, init commit parent
+            'ShaTo'     => @head_sha
+          }
+        else
+          {
+            'ShaFrom'   => @start_sha,
+            'ShaTo'     => @head_sha
+          }
+        end
+      end
+
       # There is only one case in which we will have `start_sha` and `head_sha`,
       # but not `base_sha`, which is when a diff is generated between an
       # orphaned branch and another branch, which means there _is_ no base, but
@@ -26,7 +40,7 @@ module Gitlab
       # `DiffRefs` are "complete" when they have `start_sha` and `head_sha`,
       # because `base_sha` can always be derived from this, to return an actual
       # sha, or `nil`.
-      # We have `base_sha` directly available on `DiffRefs` because it's faster#
+      # We have `base_sha` directly available on `DiffRefs` because it's faster
       # than having to look it up in the repo every time.
       def complete?
         start_sha && head_sha

@@ -38,11 +38,8 @@ module Gitlab
       end
 
       def send_git_diff(repository, diff_refs)
-        params = {
-          'RepoPath'  => repository.path_to_repo,
-          'ShaFrom'   => diff_refs.start_sha,
-          'ShaTo'     => diff_refs.head_sha
-        }
+        params = { 'RepoPath' => repository.path_to_repo }.
+                  merge(diff_refs.workhorse_params)
 
         [
           SEND_DATA_HEADER,
@@ -51,11 +48,8 @@ module Gitlab
       end
 
       def send_git_patch(repository, diff_refs)
-        params = {
-          'RepoPath'  => repository.path_to_repo,
-          'ShaFrom'   => diff_refs.start_sha,
-          'ShaTo'     => diff_refs.head_sha
-        }
+        params = { 'RepoPath' => repository.path_to_repo }.
+                  merge(diff_refs.workhorse_params)
 
         [
           SEND_DATA_HEADER,
