@@ -288,31 +288,48 @@
       $('.navbar-fixed-top').removeClass('header-pinned-nav');
     }
 
-    menuResizeTimer =  null
-    $window.off('resize.nav')
-      .on('resize.nav', function () {
-        clearTimeout(menuResizeTimer)
-        setTimeout(function () {
-          if($window.width() < 1280 && $.cookie('pin_nav') !== 'true') {
-            $.cookie('pin_nav', 'false', { path: '/' })
-            $('.page-with-sidebar')
-              .toggleClass('page-sidebar-collapsed page-sidebar-expanded')
-              .removeClass('page-sidebar-pinned')
-            $('.navbar-fixed-top').removeClass('header-pinned-nav')
-          }
-        }, 250);
-      });
+    updatePinTooltip = function ($pinBtn, doPinNav) {
+      tooltipText = 'Pin navigation';
+      if ($.cookie('pin_nav') === 'true' || doPinNav) {
+        tooltipText = 'Unpin navigation';
+      }
+
+      $pinBtn
+        .toggleClass('is-active')
+        .attr('title', tooltipText)
+        .tooltip('hide')
+        .tooltip('fixTitle');
+    }
+
+    debouncedResize = _.debounce(function () {
+      $pinBtn = $('.js-nav-pin');
+      doPinNav = $('.page-with-sidebar').is(':not(.page-sidebar-pinned)');
+
+      if ($window.width() < 1024 && $.cookie('pin_nav') === 'true' && !doPinNav) {
+        $('.page-with-sidebar')
+          .toggleClass('page-sidebar-collapsed page-sidebar-expanded')
+          .removeClass('page-sidebar-pinned')
+        $('.navbar-fixed-top').removeClass('header-pinned-nav');
+      } else if ($window.width() >= 1024 && $.cookie('pin_nav') === 'true' && doPinNav) {
+        $('.page-with-sidebar')
+          .toggleClass('page-sidebar-collapsed page-sidebar-expanded')
+          .addClass('page-sidebar-pinned')
+        $('.navbar-fixed-top').addClass('header-pinned-nav');
+      }
+    });
+
+    $window
+      .off('resize.nav')
+      .on('resize.nav', debouncedResize);
 
     return $document.off('click', '.js-nav-pin').on('click', '.js-nav-pin', function(e) {
       var $page, $pinBtn, $tooltip, $topNav, doPinNav, tooltipText;
       e.preventDefault();
-      $pinBtn = $(e.currentTarget);
+      $pinBtn = $(this);
       $page = $('.page-with-sidebar');
       $topNav = $('.navbar-fixed-top');
       $tooltip = $("#" + ($pinBtn.attr('aria-describedby')));
       doPinNav = !$page.is('.page-sidebar-pinned');
-      tooltipText = 'Pin navigation';
-      $(this).toggleClass('is-active');
       if (doPinNav) {
         $page.addClass('page-sidebar-pinned');
         $topNav.addClass('header-pinned-nav');
@@ -325,11 +342,7 @@
         path: '/',
         expires: 365 * 10
       });
-      if ($.cookie('pin_nav') === 'true' || doPinNav) {
-        tooltipText = 'Unpin navigation';
-      }
-      $tooltip.find('.tooltip-inner').text(tooltipText);
-      return $pinBtn.attr('title', tooltipText).tooltip('fixTitle');
+      updatePinTooltip($pinBtn, doPinNav);
     });
   });
 
