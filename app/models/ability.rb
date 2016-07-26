@@ -25,6 +25,14 @@ class Ability
       end.concat(global_abilities(user))
     end
 
+    def abilities
+      @abilities ||= begin
+        abilities = Six.new
+        abilities << self
+        abilities
+      end
+    end
+
     # Given a list of users and a project this method returns the users that can
     # read the given project.
     def users_that_can_read_project(users, project)
@@ -46,6 +54,10 @@ class Ability
         end
       end
     end
+
+    private
+
+
 
     # List of possible abilities for anonymous user
     def anonymous_abilities(user, subject)
@@ -542,16 +554,6 @@ class Ability
     def user_abilities
       [:read_user]
     end
-
-    def abilities
-      @abilities ||= begin
-        abilities = Six.new
-        abilities << self
-        abilities
-      end
-    end
-
-    private
 
     def restricted_public_level?
       current_application_settings.restricted_visibility_levels.include?(Gitlab::VisibilityLevel::PUBLIC)
