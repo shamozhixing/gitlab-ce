@@ -81,6 +81,7 @@
           shortcut_handler = new ShortcutsIssuable(true);
           new ZenMode();
           new MergedButtons();
+          new MergeRequestWidget();
           break;
         case 'projects:merge_requests:commits':
         case 'projects:merge_requests:builds':
