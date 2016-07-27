@@ -13,14 +13,20 @@ v 8.11.0 (unreleased)
   - Make fork counter always clickable. !5463 (winniehell)
   - Remove `search_id` of labels dropdown filter to fix 'Missleading URI for labels in Merge Requests and Issues view'. !5368 (Scott Le)
   - Load project invited groups and members eagerly in `ProjectTeam#fetch_members`
+  - Make branches sortable without push permission !5462 (winniehell)
   - Add GitLab Workhorse version to admin dashboard (Katarzyna Kobierska Ula Budziszewska)
   - Add the `sprockets-es6` gem
   - Multiple trigger variables show in separate lines (Katarzyna Kobierska Ula Budziszewska)
+  - Profile requests when a header is passed
 
 v 8.10.2 (unreleased)
   - User can now search branches by name. !5144
+  - Add ENV variable to skip repository storages validations
   - Fix backup restore. !5459
+  - Rescue Rugged::OSError (lock exists) when creating references. !5497
   - Disable MySQL foreign key checks before dropping all tables. !5472
+  - Fix a bug where forking a project from a repository storage to another would fail
+  - Show release notes in tags list
   - Use project ID in repository cache to prevent stale data from persisting across projects. !5460
   - Ensure relative paths for video are rewritten as we do for images. !5474
   - Ensure current user can retry a build before showing the 'Retry' button. !5476
