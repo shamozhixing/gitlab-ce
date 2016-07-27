@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '4.2.7.1'
+gem 'rails', '5.0.0'
 gem 'rails-deprecated_sanitizer', '~> 1.0.3'
 
 # Responders respond_to and respond_with
@@ -53,7 +53,7 @@ gem 'browser', '~> 2.2'
 
 # Extracting information from a git repository
 # Provide access to Gitlab::Git library
-gem 'gitlab_git', '~> 10.4.5'
+gem 'gitlab_git', git: 'https://gitlab.com/gitlab-org/gitlab_git', branch: 'update-activesupport'
 
 # LDAP Auth
 # GitLab fork with several improvements to original library. For full list of changes
@@ -135,10 +135,11 @@ gem 'state_machines-activerecord', '~> 0.4.0'
 gem 'after_commit_queue', '~> 1.3.0'
 
 # Issue tags
-gem 'acts-as-taggable-on', '~> 3.4'
+gem 'acts-as-taggable-on', '4.0.0.pre'
 
 # Background jobs
-gem 'sinatra', '~> 1.4.4', require: false
+gem 'sinatra', git: 'https://github.com/sinatra/sinatra.git', require: false
+gem 'rack-protection', git: 'https://github.com/sinatra/rack-protection.git'
 gem 'sidekiq', '~> 4.0'
 gem 'sidekiq-cron', '~> 0.4.0'
 gem 'redis-namespace', '~> 1.5.2'
@@ -157,7 +158,7 @@ gem 'settingslogic', '~> 2.0.9'
 gem 'version_sorter', '~> 2.1.0'
 
 # Cache
-gem 'redis-rails', '~> 4.0.0'
+gem 'redis-rails', '~> 5.0.0'
 
 # Redis
 gem 'redis', '~> 3.2'
@@ -341,7 +342,7 @@ gem 'nested_form', '~> 0.3.2'
 gem 'oauth2', '~> 1.2.0'
 
 # Soft deletion
-gem 'paranoia', '~> 2.0'
+gem 'paranoia', '2.2.0.pre'
 
 # Health check
 gem 'health_check', '~> 2.1.0'
