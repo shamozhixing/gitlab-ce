@@ -1,6 +1,5 @@
 module MembershipActions
   extend ActiveSupport::Concern
-  include MembersHelper
 
   def request_access
     Members::RequestAccessService.new(membershipable, current_user).execute
@@ -10,11 +9,7 @@ module MembershipActions
   end
 
   def approve_access_request
-    @member = membershipable.requesters.find(params[:id])
-
-    return render_403 unless can?(current_user, action_member_permission(:update, @member), @member)
-
-    @member.accept_request
+    Members::ApproveAccessRequestService.new(membershipable, current_user, user_id: params[:id]).execute
 
     redirect_to polymorphic_url([membershipable, :members])
   end
