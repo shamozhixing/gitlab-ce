@@ -91,7 +91,7 @@ class ApplicationController < ActionController::Base
   end
 
   def log_exception(exception)
-    application_trace = ActionDispatch::ExceptionWrapper.new(env, exception).application_trace
+    application_trace = ActionDispatch::ExceptionWrapper.new(env['action_dispatch.backtrace_cleaner'], exception).application_trace
     application_trace.map!{ |t| "  #{t}\n" }
     logger.error "\n#{exception.class.name} (#{exception.message}):\n#{application_trace.join}"
   end
