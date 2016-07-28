@@ -164,7 +164,7 @@ Example response:
 
 Removes a user from a group or project.
 
-Returns `200` if the request succeeds.
+Returns `204` if the request succeeds.
 
 ```
 DELETE /groups/:id/members/:user_id

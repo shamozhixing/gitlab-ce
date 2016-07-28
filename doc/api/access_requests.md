@@ -129,7 +129,7 @@ Example response:
 
 Denies an access request for the given user.
 
-Returns `200` if the request succeeds.
+Returns `204` if the request succeeds.
 
 ```
 DELETE /groups/:id/access_requests/:user_id
