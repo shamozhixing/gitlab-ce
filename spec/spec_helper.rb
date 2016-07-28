@@ -19,7 +19,7 @@ end
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 RSpec.configure do |config|
-  config.use_transactional_tests = false
+  config.use_transactional_fixtures = false
   config.use_instantiated_fixtures  = false
   config.mock_with :rspec
 
