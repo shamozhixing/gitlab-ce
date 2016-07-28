@@ -185,8 +185,8 @@ class Ability
           # Allow to read builds for internal projects
           rules << :read_build if project.public_builds?
 
-          unless owner || project.team.member?(user) || project_group_member?(project, user)
-            rules << :request_access if project.request_access_enabled
+          unless !project.request_access_enabled || owner || project.team.member?(user) || project_group_member?(project, user)
+            rules << :request_access
           end
         end
 

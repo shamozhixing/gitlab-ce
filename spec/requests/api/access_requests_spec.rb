@@ -87,6 +87,20 @@ describe API::AccessRequests, api: true  do
       end
 
       context 'when authenticated as a stranger' do
+        context "when access request is disabled for the #{source_type}" do
+          before do
+            source.update(request_access_enabled: false)
+          end
+
+          it 'returns 403' do
+            expect do
+              post api("/#{source_type.pluralize}/#{source.id}/access_requests", stranger)
+
+              expect(response).to have_http_status(403)
+            end.not_to change { source.requesters.count }
+          end
+        end
+
         it 'returns 201' do
           expect do
             post api("/#{source_type.pluralize}/#{source.id}/access_requests", stranger)

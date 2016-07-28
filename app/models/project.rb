@@ -5,7 +5,6 @@ class Project < ActiveRecord::Base
   include Gitlab::ShellAdapter
   include Gitlab::VisibilityLevel
   include Gitlab::CurrentSettings
-  include AccessRequestable
   include Referable
   include Sortable
   include AfterCommitQueue
@@ -993,6 +992,10 @@ class Project < ActiveRecord::Base
     Event.where(project_id: self.id).
       order('id DESC').limit(100).
       update_all(updated_at: Time.now)
+  end
+
+  def request_access(user)
+    Members::RequestAccessService.new(self, user).execute
   end
 
   def project_member(user)
