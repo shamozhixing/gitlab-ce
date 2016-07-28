@@ -113,8 +113,6 @@ module Gitlab
     redis_config_hash[:expires_in] = 2.weeks # Cache should not grow forever
     config.cache_store = :redis_store, redis_config_hash
 
-    config.active_record.raise_in_transactional_callbacks = true
-
     config.active_job.queue_adapter = :sidekiq
 
     # This is needed for gitlab-shell
