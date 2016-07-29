@@ -17,10 +17,10 @@ GIT
 
 GIT
   remote: https://gitlab.com/gitlab-org/gitlab_git
-  revision: a010b80fce758d90edf9a9a74c71bab28118f825
+  revision: 9b1a58f86436723cb607630f4101069b7d259eb2
   branch: update-activesupport
   specs:
-    gitlab_git (10.3.0)
+    gitlab_git (10.4.1)
       activesupport (>= 4.0)
       charlock_holmes (~> 0.7.3)
       github-linguist (~> 4.7.0)
