@@ -176,6 +176,10 @@
           new ProtectedBranchesAccessSelect($(".new_protected_branch"), false, true);
           new ProtectedBranchesAccessSelect($(".protected-branches-list"), true, false);
           break;
+        case 'profiles:note_templates:new':
+        case 'profiles:note_templates:edit':
+          new GLForm($('.js-note-template-form'));
+          break;
       }
       switch (path.first()) {
         case 'admin':
