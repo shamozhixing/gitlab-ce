@@ -400,7 +400,7 @@ class Projects::MergeRequestsController < Projects::ApplicationController
   end
 
   def module_enabled
-    return render_404 unless @project.merge_requests_enabled
+    return render_404 unless @project.feature_enabled?(:merge_requests, current_user)
   end
 
   def validates_merge_request

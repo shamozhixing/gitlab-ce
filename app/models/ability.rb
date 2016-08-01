@@ -203,7 +203,7 @@ class Ability
         rules -= project_archived_rules
       end
 
-      (rules - project_disabled_features_rules(project)).uniq
+      (rules - project_disabled_features_rules(project, user)).uniq
     end
 
     def project_team_rules(team, user)
@@ -335,35 +335,39 @@ class Ability
       ]
     end
 
-    def project_disabled_features_rules(project)
+    def project_disabled_features_rules(project, user = nil)
       rules = []
 
-      unless project.issues_enabled
+      unless project.feature_enabled?(:issues, user)
         rules += named_abilities('issue')
       end
 
-      unless project.merge_requests_enabled
+      unless project.feature_enabled?(:merge_requests, user)
         rules += named_abilities('merge_request')
       end
 
-      unless project.issues_enabled or project.merge_requests_enabled
+      unless project.feature_enabled?(:issues, user) || project.feature_enabled?(:merge_requests, user)
         rules += named_abilities('label')
         rules += named_abilities('milestone')
       end
 
-      unless project.snippets_enabled
+      unless project.feature_enabled?(:snippets, user)
         rules += named_abilities('project_snippet')
       end
 
-      unless project.wiki_enabled
+      unless project.feature_enabled?(:wiki, user)
         rules += named_abilities('wiki')
       end
 
-      unless project.builds_enabled
+      unless project.feature_enabled?(:builds, user)
         rules += named_abilities('build')
         rules += named_abilities('pipeline')
         rules += named_abilities('environment')
         rules += named_abilities('deployment')
+      end
+
+      unless project.feature_enabled?(:repository, user)
+        rules += repo_abilities
       end
 
       unless project.container_registry_enabled
@@ -606,6 +610,14 @@ class Ability
         :"create_#{name}",
         :"update_#{name}",
         :"admin_#{name}"
+      ]
+    end
+
+    def repo_abilities
+      [ :download_code,
+        :fork_project,
+        :read_commit_status,
+        :read_pipeline
       ]
     end
 

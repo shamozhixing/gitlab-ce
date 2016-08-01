@@ -84,10 +84,10 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.string   "health_check_access_token"
     t.boolean  "send_user_confirmation_email",          default: false
     t.integer  "container_registry_token_expire_delay", default: 5
-    t.boolean  "user_default_external",                 default: false,       null: false
     t.text     "after_sign_up_text"
     t.string   "repository_storage",                    default: "default"
     t.string   "enabled_git_access_protocol"
+    t.boolean  "user_default_external",                 default: false,       null: false
     t.boolean  "domain_blacklist_enabled",              default: false
     t.text     "domain_blacklist"
     t.boolean  "koding_enabled"
@@ -175,8 +175,8 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.text     "artifacts_metadata"
     t.integer  "erased_by_id"
     t.datetime "erased_at"
-    t.string   "environment"
     t.datetime "artifacts_expire_at"
+    t.string   "environment"
     t.integer  "artifacts_size"
     t.string   "when"
     t.text     "yaml_variables"
@@ -471,6 +471,7 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.datetime "deleted_at"
     t.date     "due_date"
     t.integer  "moved_to_id"
+    t.integer  "lock_version",  default: 0,     null: false
   end
 
   add_index "issues", ["assignee_id"], name: "index_issues_on_assignee_id", using: :btree
@@ -617,6 +618,7 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.integer  "merge_user_id"
     t.string   "merge_commit_sha"
     t.datetime "deleted_at"
+    t.integer  "lock_version",                 default: 0,     null: false
     t.string   "in_progress_merge_commit_sha"
     t.text     "merge_params"
   end
@@ -772,14 +774,28 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.integer  "user_id",                    null: false
     t.string   "token",                      null: false
     t.string   "name",                       null: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
     t.boolean  "revoked",    default: false
     t.datetime "expires_at"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   add_index "personal_access_tokens", ["token"], name: "index_personal_access_tokens_on_token", unique: true, using: :btree
   add_index "personal_access_tokens", ["user_id"], name: "index_personal_access_tokens_on_user_id", using: :btree
+
+  create_table "project_features", force: :cascade do |t|
+    t.integer  "project_id"
+    t.integer  "merge_requests_access_level"
+    t.integer  "issues_access_level"
+    t.integer  "wiki_access_level"
+    t.integer  "snippets_access_level"
+    t.integer  "repository_access_level"
+    t.integer  "builds_access_level"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "project_features", ["project_id"], name: "index_project_features_on_project_id", using: :btree
 
   create_table "project_group_links", force: :cascade do |t|
     t.integer  "project_id",                null: false
@@ -805,11 +821,7 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "creator_id"
-    t.boolean  "issues_enabled",                     default: true,      null: false
-    t.boolean  "merge_requests_enabled",             default: true,      null: false
-    t.boolean  "wiki_enabled",                       default: true,      null: false
     t.integer  "namespace_id"
-    t.boolean  "snippets_enabled",                   default: true,      null: false
     t.datetime "last_activity_at"
     t.string   "import_url"
     t.integer  "visibility_level",                   default: 0,         null: false
@@ -823,7 +835,6 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.integer  "commit_count",                       default: 0
     t.text     "import_error"
     t.integer  "ci_id"
-    t.boolean  "builds_enabled",                     default: true,      null: false
     t.boolean  "shared_runners_enabled",             default: true,      null: false
     t.string   "runners_token"
     t.string   "build_coverage_regex"
@@ -838,8 +849,8 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.boolean  "only_allow_merge_if_build_succeeds", default: false,     null: false
     t.boolean  "has_external_issue_tracker"
     t.string   "repository_storage",                 default: "default", null: false
-    t.boolean  "has_external_wiki"
     t.boolean  "request_access_enabled",             default: true,      null: false
+    t.boolean  "has_external_wiki"
   end
 
   add_index "projects", ["ci_id"], name: "index_projects_on_ci_id", using: :btree

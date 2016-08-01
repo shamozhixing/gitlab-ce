@@ -8,7 +8,7 @@ module Projects
         name:                   @project.name,
         path:                   @project.path,
         shared_runners_enabled: @project.shared_runners_enabled,
-        builds_enabled:         @project.builds_enabled,
+        builds_enabled:         @project.builds_enabled?,
         namespace_id:           @params[:namespace].try(:id) || current_user.namespace.id
       }
 

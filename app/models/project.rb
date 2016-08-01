@@ -16,19 +16,17 @@ class Project < ActiveRecord::Base
 
   UNKNOWN_IMPORT_URL = 'http://unknown.git'
 
+  delegate :feature_enabled?, :builds_enabled?, :wiki_enabled, to: :project_feature, allow_nil: true
+
   default_value_for :archived, false
   default_value_for :visibility_level, gitlab_config_features.visibility_level
-  default_value_for :issues_enabled, gitlab_config_features.issues
-  default_value_for :merge_requests_enabled, gitlab_config_features.merge_requests
-  default_value_for :builds_enabled, gitlab_config_features.builds
-  default_value_for :wiki_enabled, gitlab_config_features.wiki
-  default_value_for :snippets_enabled, gitlab_config_features.snippets
   default_value_for :container_registry_enabled, gitlab_config_features.container_registry
   default_value_for(:repository_storage) { current_application_settings.repository_storage }
   default_value_for(:shared_runners_enabled) { current_application_settings.shared_runners_enabled }
 
   after_create :ensure_dir_exist
   after_save :ensure_dir_exist, if: :namespace_id_changed?
+  after_initialize :setup_project_feature
 
   # set last_activity_at to the same as created_at
   after_create :set_last_activity_at
@@ -130,6 +128,7 @@ class Project < ActiveRecord::Base
   has_many :notification_settings, dependent: :destroy, as: :source
 
   has_one :import_data, dependent: :destroy, class_name: "ProjectImportData"
+  has_one :project_feature, dependent: :destroy
 
   has_many :commit_statuses, dependent: :destroy, class_name: 'CommitStatus', foreign_key: :gl_project_id
   has_many :pipelines, dependent: :destroy, class_name: 'Ci::Pipeline', foreign_key: :gl_project_id
@@ -142,6 +141,7 @@ class Project < ActiveRecord::Base
   has_many :deployments, dependent: :destroy
 
   accepts_nested_attributes_for :variables, allow_destroy: true
+  accepts_nested_attributes_for :project_feature
 
   delegate :name, to: :owner, allow_nil: true, prefix: true
   delegate :members, to: :team, prefix: true
@@ -159,8 +159,6 @@ class Project < ActiveRecord::Base
     length: { within: 0..255 },
     format: { with: Gitlab::Regex.project_path_regex,
               message: Gitlab::Regex.project_path_regex_message }
-  validates :issues_enabled, :merge_requests_enabled,
-            :wiki_enabled, inclusion: { in: [true, false] }
   validates :namespace, presence: true
   validates_uniqueness_of :name, scope: :namespace_id
   validates_uniqueness_of :path, scope: :namespace_id
@@ -195,6 +193,8 @@ class Project < ActiveRecord::Base
   scope :non_archived, -> { where(archived: false) }
   scope :for_milestones, ->(ids) { joins(:milestones).where('milestones.id' => ids).distinct }
   scope :with_push, -> { joins(:events).where('events.action = ?', Event::PUSHED) }
+
+  scope :with_builds_enabled, -> { joins(:project_feature).where('project_features.builds_access_level IS NULL or project_features.builds_access_level > 0') }
 
   scope :active, -> { joins(:issues, :notes, :merge_requests).order('issues.created_at, notes.created_at, merge_requests.created_at DESC') }
   scope :abandoned, -> { where('projects.last_activity_at < ?', 6.months.ago) }
@@ -1106,7 +1106,7 @@ class Project < ActiveRecord::Base
   end
 
   def enable_ci
-    self.builds_enabled = true
+    self.builds_enabled?
   end
 
   def any_runners?(&block)

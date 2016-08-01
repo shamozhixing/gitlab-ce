@@ -399,4 +399,14 @@ module ProjectsHelper
 
     message.strip.gsub(project.repository_storage_path.chomp('/'), "[REPOS PATH]")
   end
+
+  def project_feature_access_select(field)
+    # Don't show option "available only for team members" if project is private
+    options = ProjectFeature.options
+    options.delete('Only team members') if @project.private?
+
+    field_name = field.to_s
+    options = options_for_select(options, selected: @project.project_feature.public_send(field) || ProjectFeature::ENABLED)
+    content_tag(:select, options, name:"project[project_feature_attributes][#{field_name}]", id: "project_project_feature_attributes_#{field_name}", class: "pull-right form-control").html_safe
+  end
 end

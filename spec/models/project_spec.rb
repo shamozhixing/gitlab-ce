@@ -708,7 +708,7 @@ describe Project, models: true do
   describe '#builds_enabled' do
     let(:project) { create :project }
 
-    before { project.builds_enabled = true }
+    before { project.project_feature.update_attributes(builds_access_level: ProjectFeature::ENABLED) }
 
     subject { project.builds_enabled }
 

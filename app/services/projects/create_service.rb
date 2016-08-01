@@ -81,8 +81,7 @@ module Projects
       log_info("#{@project.owner.name} created a new project \"#{@project.name_with_namespace}\"")
 
       unless @project.gitlab_project_import?
-        @project.create_wiki if @project.wiki_enabled?
-
+        @project.create_wiki if @project.feature_enabled?(:wiki, @current_user)
         @project.build_missing_services
 
         @project.create_labels

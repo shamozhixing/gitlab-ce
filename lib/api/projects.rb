@@ -144,11 +144,6 @@ module API
       #   name (required) - name for new project
       #   description (optional) - short project description
       #   default_branch (optional) - 'master' by default
-      #   issues_enabled (optional)
-      #   merge_requests_enabled (optional)
-      #   builds_enabled (optional)
-      #   wiki_enabled (optional)
-      #   snippets_enabled (optional)
       #   container_registry_enabled (optional)
       #   shared_runners_enabled (optional)
       #   public (optional) - if true same as setting visibility_level = 20
@@ -208,11 +203,6 @@ module API
       #   name (optional) - name of a project
       #   path (optional) - path of a project
       #   description (optional) - short project description
-      #   issues_enabled (optional)
-      #   merge_requests_enabled (optional)
-      #   builds_enabled (optional)
-      #   wiki_enabled (optional)
-      #   snippets_enabled (optional)
       #   container_registry_enabled (optional)
       #   shared_runners_enabled (optional)
       #   public (optional) - if true same as setting visibility_level = 20

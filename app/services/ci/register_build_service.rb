@@ -17,7 +17,7 @@ module Ci
             order('COALESCE(project_builds.running_builds, 0) ASC', 'ci_builds.id ASC')
         else
           # do run projects which are only assigned to this runner (FIFO)
-          builds.where(project: current_runner.projects.where(builds_enabled: true)).order('created_at ASC')
+          builds.where(project: current_runner.projects.with_builds_enabled).order('created_at ASC')
         end
 
       build = builds.find do |build|

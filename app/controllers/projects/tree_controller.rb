@@ -9,10 +9,9 @@ class Projects::TreeController < Projects::ApplicationController
   before_action :assign_dir_vars, only: [:create_dir]
   before_action :authorize_download_code!
   before_action :authorize_edit_tree!, only: [:create_dir]
+  before_action :module_enabled!
 
   def show
-    return render_404 unless @repository.commit(@ref)
-
     if tree.entries.empty?
       if @repository.blob_at(@commit.id, @path)
         redirect_to(
@@ -49,5 +48,10 @@ class Projects::TreeController < Projects::ApplicationController
       file_path: @dir_name,
       commit_message: params[:commit_message],
     }
+  end
+
+  def module_enabled!
+    return if @repository.commit(@ref) && @project.feature_enabled?(:repository, current_user)
+    render_404
   end
 end

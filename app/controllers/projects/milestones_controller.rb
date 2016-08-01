@@ -106,7 +106,7 @@ class Projects::MilestonesController < Projects::ApplicationController
   end
 
   def module_enabled
-    unless @project.issues_enabled || @project.merge_requests_enabled
+    unless @project.feature_enabled?(:issues, current_user) || @project.feature_enabled?(:merge_requests, current_user)
       return render_404
     end
   end
