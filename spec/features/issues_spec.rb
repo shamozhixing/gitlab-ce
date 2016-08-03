@@ -371,7 +371,7 @@ describe 'Issues', feature: true do
         click_link 'Edit'
         first('.dropdown-menu-close').click
 
-        expect(evaluate_script('jQuery.active')).to be(0)
+        expect(page).not_to have_selector('.block-loading')
       end
     end
   end
