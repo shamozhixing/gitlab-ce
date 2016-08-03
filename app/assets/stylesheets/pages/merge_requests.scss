@@ -64,10 +64,19 @@
       margin-right: 4px;
       position: relative;
       top: 1px;
+      overflow: visible;
     }
 
     &.ci-success {
       color: $gl-success;
+    }
+
+    &.ci-success_with_warnings {
+      color: $gl-success;
+
+      i {
+        color: $gl-warning;
+      }
     }
 
     &.ci-skipped {
@@ -206,6 +215,11 @@
           width: 16px;
           position: relative;
           top: 3px;
+        }
+
+        &:hover,
+        &:focus {
+          text-decoration: none;
         }
       }
     }
