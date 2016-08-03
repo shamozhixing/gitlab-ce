@@ -12,6 +12,7 @@ v 8.11.0 (unreleased)
   - Expand commit message width in repo view (ClemMakesApps)
   - Fix of 'Commits being passed to custom hooks are already reachable when using the UI'
   - Add support for using RequestStore within Sidekiq tasks via SIDEKIQ_REQUEST_STORE env variable
+  - Use custom Ruby images to test builds (registry.gitlab.com/gitlab-org/gitlab-build-images:*)
   - Optimize maximum user access level lookup in loading of notes
   - Add "No one can push" as an option for protected branches. !5081
   - Environments have an url to link to
@@ -422,7 +423,6 @@ v 8.9.0
   - Add API endpoint for Sidekiq Metrics !4653
   - Refactoring Award Emoji with API support for Issues and MergeRequests
   - Use Knapsack to evenly distribute tests across multiple nodes
-  - Use custom Ruby images to test builds (registry.gitlab.com/gitlab-org/gitlab-build-images:*)
   - Add `sha` parameter to MR merge API, to ensure only reviewed changes are merged
   - Don't allow MRs to be merged when commits were added since the last review / page load
   - Add DB index on users.state
