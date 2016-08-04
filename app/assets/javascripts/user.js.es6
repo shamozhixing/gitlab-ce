@@ -1,5 +1,3 @@
-
-
 ((global) => {
   class User {
     constructor(opts) {
