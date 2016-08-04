@@ -203,6 +203,7 @@
         case 'projects':
           new Project();
           new ProjectAvatar();
+          new NoteTemplate();
           switch (path[1]) {
             case 'compare':
               new CompareAutocomplete();
