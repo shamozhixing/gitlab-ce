@@ -11,7 +11,8 @@ class User {
         path: path
       });
       $(this).parents('.project-limit-message').remove();
-      return e.preventDefault();
+      e.preventDefault();
+      return;
     });
   }
 
@@ -20,5 +21,5 @@ class User {
       parentEl: '.user-profile',
       action: this.opts.action
     });
-  };
-};
+  }
+}
