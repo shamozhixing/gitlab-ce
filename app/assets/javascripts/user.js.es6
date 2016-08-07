@@ -26,4 +26,4 @@
   }
 
   global.User = User;
-})(window.gl);
+})(window.gl || (window.gl = {}));
