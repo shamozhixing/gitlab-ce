@@ -124,8 +124,8 @@ describe Import::GithubController do
       context "when the GitHub user and GitLab user's usernames match" do
         it "takes the current user's namespace" do
           expect(Gitlab::GithubImport::ProjectCreator).
-            to receive(:new).with(github_repo, user.namespace, user, access_params).
-            and_return(double(execute: true))
+            to receive(:new).with(github_repo, github_repo.name, user.namespace, user, access_params).
+              and_return(double(execute: true))
 
           post :create, format: :js
         end
@@ -136,8 +136,8 @@ describe Import::GithubController do
 
         it "takes the current user's namespace" do
           expect(Gitlab::GithubImport::ProjectCreator).
-            to receive(:new).with(github_repo, user.namespace, user, access_params).
-            and_return(double(execute: true))
+            to receive(:new).with(github_repo, github_repo.name, user.namespace, user, access_params).
+              and_return(double(execute: true))
 
           post :create, format: :js
         end
@@ -158,8 +158,8 @@ describe Import::GithubController do
         context "when the namespace is owned by the GitLab user" do
           it "takes the existing namespace" do
             expect(Gitlab::GithubImport::ProjectCreator).
-              to receive(:new).with(github_repo, existing_namespace, user, access_params).
-              and_return(double(execute: true))
+              to receive(:new).with(github_repo, github_repo.name, existing_namespace, user, access_params).
+                and_return(double(execute: true))
 
             post :create, format: :js
           end
@@ -192,10 +192,23 @@ describe Import::GithubController do
 
         it "takes the new namespace" do
           expect(Gitlab::GithubImport::ProjectCreator).
-            to receive(:new).with(github_repo, an_instance_of(Group), user, access_params).
-            and_return(double(execute: true))
+            to receive(:new).with(github_repo, github_repo.name, an_instance_of(Group), user, access_params).
+              and_return(double(execute: true))
 
           post :create, format: :js
+        end
+      end
+
+      context 'user has chosen a namespace and name for the project' do
+        let(:test_namespace) { create(:namespace, name: 'test_namespace', owner: user) }
+        let(:test_name) { 'test_name' }
+
+        it 'takes the selected namespace and name' do
+          expect(Gitlab::GithubImport::ProjectCreator).
+            to receive(:new).with(github_repo, 'test_name', test_namespace, user, access_params).
+              and_return(double(execute: true))
+
+          post :create, { new_namespace: test_namespace.name, new_name: test_name, format: :js }
         end
       end
     end

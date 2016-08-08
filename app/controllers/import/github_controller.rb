@@ -40,7 +40,7 @@ class Import::GithubController < Import::BaseController
   def create
     @repo_id = params[:repo_id].to_i
     repo = client.repo(@repo_id)
-    @project_name = repo.name
+    @project_name = params[:new_name].presence || repo.name
 
     repo_owner = repo.owner.login
     repo_owner = current_user.username if repo_owner == client.user.login
@@ -48,7 +48,7 @@ class Import::GithubController < Import::BaseController
 
     namespace = get_or_create_namespace || (render and return)
 
-    @project = Gitlab::GithubImport::ProjectCreator.new(repo, namespace, current_user, access_params).execute
+    @project = Gitlab::GithubImport::ProjectCreator.new(repo, @project_name, namespace, current_user, access_params).execute
   end
 
   private
