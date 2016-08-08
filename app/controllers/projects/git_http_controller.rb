@@ -55,15 +55,18 @@ class Projects::GitHttpController < Projects::ApplicationController
       login, password = user_name_and_password(request)
       auth_result = Gitlab::Auth.find_for_git_client(login, password, project: project, ip: request.ip)
 
-      if auth_result.type == :ci && upload_pack?
-        @ci = true
-      elsif auth_result.type == :oauth && !upload_pack?
-        # Not allowed
+      case auth_result.type
+      when :service
+        @service = true if upload_pack?
+      when :build
+        @user = auth_result.user if upload_pack?
+      when :oauth
+        @user = auth_result.user if upload_pack?
       else
         @user = auth_result.user
       end
 
-      if ci? || user
+      if service? || user
         return # Allow access
       end
     elsif allow_kerberos_spnego_auth? && spnego_provided?
@@ -169,8 +172,8 @@ class Projects::GitHttpController < Projects::ApplicationController
     end
   end
 
-  def ci?
-    @ci.present?
+  def service?
+    @service.present?
   end
 
   def upload_pack_allowed?
@@ -179,7 +182,7 @@ class Projects::GitHttpController < Projects::ApplicationController
     if user
       access_check.allowed?
     else
-      ci? || project.public?
+      service? || project.public?
     end
   end
 

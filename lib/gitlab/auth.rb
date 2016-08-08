@@ -8,15 +8,17 @@ module Gitlab
 
         result = Result.new
 
-        if valid_ci_request?(login, password, project)
-          result.type = :ci
+        if valid_service_request?(login, password, project)
+          result.type = :service
+        elsif result.user = find_with_build_password(login, password)
+          result.type = :build
         elsif result.user = find_with_user_password(login, password)
           result.type = :gitlab_or_ldap
         elsif result.user = oauth_access_token_check(login, password)
           result.type = :oauth
         end
 
-        rate_limit!(ip, success: !!result.user || (result.type == :ci), login: login)
+        rate_limit!(ip, success: !!result.user || (result.type == :service), login: login)
         result
       end
 
@@ -32,6 +34,13 @@ module Gitlab
           Gitlab::LDAP::Authentication.login(login, password)
         else
           user if user.valid_password?(password)
+        end
+      end
+
+      def find_with_build_password(login, password)
+        if login == 'gitlab-ci-token' && password
+          build = Ci::Build.find_by(token: password)
+          build.user if build
         end
       end
 
@@ -58,7 +67,7 @@ module Gitlab
 
       private
 
-      def valid_ci_request?(login, password, project)
+      def valid_service_request?(login, password, project)
         matched_login = /(?<service>^[a-zA-Z]*-ci)-token$/.match(login)
 
         return false unless project && matched_login.present?

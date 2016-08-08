@@ -1105,7 +1105,6 @@ class Project < ActiveRecord::Base
   end
 
   # TODO (ayufan): For now we use runners_token (backward compatibility)
-  # In 8.4 every build will have its own individual token valid for time of build
   def valid_build_token?(token)
     self.builds_enabled? && self.runners_token && ActiveSupport::SecurityUtils.variable_size_secure_compare(token, self.runners_token)
   end

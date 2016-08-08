@@ -76,7 +76,15 @@ module Auth
       when 'pull'
         requested_project == project || can?(current_user, :read_container_image, requested_project)
       when 'push'
-        requested_project == project || can?(current_user, :create_container_image, requested_project)
+        # We allow to push if we have explicit project authorization, or system wide user authorization
+        # If CI logs as service: it will pass project, but not user
+        # If CI logs as build: it will pass project, and user (of that build)
+        # If User logs: there's no project yet, so we will pass only user
+        if project
+          requested_project == project
+        else
+          can?(current_user, :create_container_image, requested_project)
+        end
       else
         false
       end
