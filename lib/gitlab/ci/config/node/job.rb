@@ -107,8 +107,17 @@ module Gitlab
               after_script: after_script }
           end
 
-          def compose!(_deps)
-            super
+          def compose!(deps)
+            super(deps)
+
+            self.class.nodes.keys.each do |key|
+              global_entry = deps[key]
+              job_entry = self[key]
+
+              if global_entry.specified? && !job_entry.specified?
+                @entries[key] = @global[key]
+              end
+            end
 
             if type_defined? && !stage_defined?
               @entries[:stage] = @entries[:type]

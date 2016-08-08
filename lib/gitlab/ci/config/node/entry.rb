@@ -30,6 +30,10 @@ module Gitlab
             end
           end
 
+          def [](key)
+            @entries[key] || Node::Null.new
+          end
+
           def leaf?
             @entries.none?
           end
