@@ -1,3 +1,5 @@
+window.gl = window.gl || {};
+
 ((global) => {
   class User {
     constructor(opts) {
@@ -26,4 +28,4 @@
   }
 
   global.User = User;
-})(window.gl || (window.gl = {}));
+})(window.gl);
