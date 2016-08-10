@@ -10,7 +10,7 @@ Capybara.register_driver :poltergeist do |app|
 end
 
 Capybara.default_max_wait_time = timeout
-Capybara.ignore_hidden_elements = false
+Capybara.ignore_hidden_elements = true
 
 unless ENV['CI'] || ENV['CI_SERVER']
   require 'capybara-screenshot/spinach'
