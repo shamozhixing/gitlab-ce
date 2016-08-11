@@ -14,8 +14,22 @@ module Backup
         if project.empty_repo?
           $progress.puts "[SKIPPED]".color(:cyan)
         else
-          cmd = %W(tar -cf #{path_to_bundle(project)} -C #{path_to_repo(project)} .)
+          in_path(path_to_repo(project), ['annex', 'custom_hooks']) do |dir|
+            FileUtils.mkdir_p(path_to_tars(project))
+            cmd = %W(tar -cf #{path_to_tar(project, dir)} -C #{path_to_repo(project)} #{dir})
+            output, status = Gitlab::Popen.popen(cmd)
+
+            unless status.zero?
+              puts "[FAILED]".color(:red)
+              puts "failed: #{cmd.join(' ')}"
+              puts output
+              abort 'Backup failed'
+            end
+          end
+
+          cmd = %W(#{Gitlab.config.git.bin_path} --git-dir=#{path_to_repo(project)} bundle create #{path_to_bundle(project)} --all)
           output, status = Gitlab::Popen.popen(cmd)
+
           if status.zero?
             $progress.puts "[DONE]".color(:green)
           else
@@ -63,9 +77,8 @@ module Backup
 
         project.ensure_dir_exist
 
-        if File.exist?(path_to_bundle(project))
-          FileUtils.mkdir_p(path_to_repo(project))
-          cmd = %W(tar -xf #{path_to_bundle(project)} -C #{path_to_repo(project)})
+        if File.exists?(path_to_bundle(project))
+          cmd = %W(#{Gitlab.config.git.bin_path} clone --bare #{path_to_bundle(project)} #{path_to_repo(project)})
         else
           cmd = %W(#{Gitlab.config.git.bin_path} init --bare #{path_to_repo(project)})
         end
@@ -76,6 +89,17 @@ module Backup
           puts "[FAILED]".color(:red)
           puts "failed: #{cmd.join(' ')}"
           abort 'Restore failed'
+        end
+
+        debugger
+        in_path(path_to_backup_with_namespace(project), ['annex', 'custom_hooks']) do |dir|
+          cmd = %W(tar -xf #{path_to_tar(project, dir)} -C #{path_to_repo(project)} #{dir})
+
+          unless system(*cmd, silent)
+            puts "[FAILED]".color(:red)
+            puts "failed: #{cmd.join(' ')}"
+            abort 'Restore failed'
+          end
         end
 
         wiki = ProjectWiki.new(project)
@@ -120,8 +144,33 @@ module Backup
       File.join(backup_repos_path, project.path_with_namespace + ".bundle")
     end
 
+    def path_to_tar(project, dir)
+      File.join(backup_repos_path, project.path_with_namespace + "/#{dir}.tar")
+    end
+
+    def path_to_tars(project)
+      File.join(backup_repos_path, project.path_with_namespace)
+    end
+
     def backup_repos_path
       File.join(Gitlab.config.backup.path, "repositories")
+    end
+
+    def folder_exists?(project, folder)
+      path = "#{path_to_repo(project)}/#{folder}"
+      Dir.exists?(path)
+    end
+
+    def in_repo(project, directories)
+      directories.map do |dir|
+        yield(dir) if Dir.exists?(File.join(path_to_repo(project), dir))
+      end
+    end
+
+    def in_path(path, directories)
+      directories.map do |dir|
+        yield(dir) if Dir.exists?(File.join(path, dir))
+      end
     end
 
     def prepare
@@ -134,6 +183,9 @@ module Backup
 
     def silent
       {err: '/dev/null', out: '/dev/null'}
+    end
+
+    def execute(cmd)
     end
 
     private
