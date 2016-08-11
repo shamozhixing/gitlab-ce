@@ -221,6 +221,13 @@ class Projects::MergeRequestsController < Projects::ApplicationController
 
     @note_counts = Note.where(commit_id: @commits.map(&:id)).
       group(:commit_id).count
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: { html: view_to_html_string('projects/merge_requests/_new_diffs', diffs: @diffs, commits: @commits) }
+      end
+    end
   end
 
   def create

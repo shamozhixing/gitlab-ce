@@ -123,8 +123,12 @@
       if (this.diffsLoaded) {
         return;
       }
+
+      var parser = document.createElement('a');
+      parser.href = source;
+
       return this._get({
-        url: (source + ".json") + this._location.search,
+        url: (parser.pathname + ".json") + this._location.search,
         success: (function(_this) {
           return function(data) {
             $('#diffs').html(data.html);

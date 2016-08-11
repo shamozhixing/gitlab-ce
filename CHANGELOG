@@ -144,6 +144,7 @@ v 8.11.0 (unreleased)
   - Allow horizontal scrolling of code blocks in issue body
   - Catch what warden might throw when profiling requests to re-throw it
   - Avoid commit lookup on diff_helper passing existing local variable to the helper method
+  - MergeRequest new form load diff asynchronously
   - Add description to new_issue email and new_merge_request_email in text/plain content type. !5663 (dixpac)
   - Speed up and reduce memory usage of Commit#repo_changes, Repository#expire_avatar_cache and IrkerWorker
   - Add unfold links for Side-by-Side view. !5415 (Tim Masliuchenko)

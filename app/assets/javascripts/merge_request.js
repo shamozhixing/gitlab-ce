@@ -33,11 +33,8 @@
     };
 
     MergeRequest.prototype.initTabs = function() {
-      if (this.opts.action !== 'new') {
-        window.mrTabs = new MergeRequestTabs(this.opts);
-      } else {
-        return $('.merge-request-tabs a[data-toggle="tab"]:first').tab('show');
-      }
+      window.mrTabs = new MergeRequestTabs(this.opts);
+      return window.mrTabs;
     };
 
     MergeRequest.prototype.showAllCommits = function() {
