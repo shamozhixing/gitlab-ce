@@ -161,12 +161,6 @@ module Backup
       Dir.exists?(path)
     end
 
-    def in_repo(project, directories)
-      directories.map do |dir|
-        yield(dir) if Dir.exists?(File.join(path_to_repo(project), dir))
-      end
-    end
-
     def in_path(path, directories)
       directories.map do |dir|
         yield(dir) if Dir.exists?(File.join(path, dir))
