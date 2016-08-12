@@ -96,8 +96,8 @@ class ProjectPolicy < BasePolicy
   end
 
   # Push abilities on the users team role
-  def team_access!
-    access = project.team.max_member_access(@user.id)
+  def team_access!(user)
+    access = project.team.max_member_access(user.id)
 
     return if access < Gitlab::Access::GUEST
     guest_access!
@@ -154,16 +154,16 @@ class ProjectPolicy < BasePolicy
     end
   end
 
-  def generate!
-    team_access!
+  def rules(user)
+    team_access!(user)
 
-    owner = @user.admin? ||
-            project.owner == @user ||
-            (project.group && project.group.has_owner?(@user))
+    owner = user.admin? ||
+            project.owner == user ||
+            (project.group && project.group.has_owner?(user))
 
     owner_access! if owner
 
-    if project.public? || (project.internal? && !@user.external?)
+    if project.public? || (project.internal? && !user.external?)
       guest_access!
       public_access!
 
@@ -171,7 +171,7 @@ class ProjectPolicy < BasePolicy
       can! if project.public_builds?
 
       if project.request_access_enabled &&
-         !(owner || project.team.member?(@user) || project_group_member?)
+         !(owner || project.team.member?(user) || project_group_member?(user))
         can! :request_access
       end
     end
@@ -181,11 +181,33 @@ class ProjectPolicy < BasePolicy
     disabled_features!
   end
 
-  def project_group_member?
+  def anonymous_rules
+    return unless project.public?
+
+    can! :read_project
+    can! :read_wiki
+    can! :read_label
+    can! :read_milestone
+    can! :read_project_snippet
+    can! :read_project_member
+    can! :read_merge_request
+    can! :read_note
+    can! :read_pipeline
+    can! :read_commit_status
+    can! :read_container_image
+    can! :download_code
+
+    # Allow to read builds by anonymous user if guests are allowed
+    can! :read_build if project.public_builds?
+
+    disabled_features!
+  end
+
+  def project_group_member?(user)
     project.group &&
     (
-      project.group.members.exists?(user_id: @user.id) ||
-      project.group.requesters.exists?(user_id: @user.id)
+      project.group.members.exists?(user_id: user.id) ||
+      project.group.requesters.exists?(user_id: user.id)
     )
   end
 
