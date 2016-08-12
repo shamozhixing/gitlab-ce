@@ -122,35 +122,35 @@ class ProjectPolicy < BasePolicy
 
   def disabled_features!
     unless project.issues_enabled
-      cannot! *named_abilities(:issue)
+      cannot!(*named_abilities(:issue))
     end
 
     unless project.merge_requests_enabled
-      cannot! *named_abilities(:merge_request)
+      cannot!(*named_abilities(:merge_request))
     end
 
     unless project.issues_enabled or project.merge_requests_enabled
-      cannot! *named_abilities(:label)
-      cannot! *named_abilities(:milestone)
+      cannot!(*named_abilities(:label))
+      cannot!(*named_abilities(:milestone))
     end
 
     unless project.snippets_enabled
-      cannot! *named_abilities(:project_snippet)
+      cannot!(*named_abilities(:project_snippet))
     end
 
     unless project.wiki_enabled
-      cannot! *named_abilities(:wiki)
+      cannot!(*named_abilities(:wiki))
     end
 
     unless project.builds_enabled
-      cannot! *named_abilities(:build)
-      cannot! *named_abilities(:pipeline)
-      cannot! *named_abilities(:environment)
-      cannot! *named_abilities(:deployment)
+      cannot!(*named_abilities(:build))
+      cannot!(*named_abilities(:pipeline))
+      cannot!(*named_abilities(:environment))
+      cannot!(*named_abilities(:deployment))
     end
 
     unless project.container_registry_enabled
-      cannot! *named_abilities(:container_image)
+      cannot!(*named_abilities(:container_image))
     end
   end
 
