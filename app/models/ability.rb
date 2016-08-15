@@ -68,7 +68,7 @@ class Ability
     def abilities_by_subject_class(user:, subject:)
       case subject
       when CommitStatus then commit_status_abilities(user, subject)
-      when Project then ProjectPolicy.new(subject).abilities(user)
+      when Project then ProjectPolicy.abilities(user, subject)
       when Issue then issue_abilities(user, subject)
       when Note then note_abilities(user, subject)
       when ProjectSnippet then project_snippet_abilities(user, subject)
@@ -94,9 +94,9 @@ class Ability
       elsif subject.is_a?(CommitStatus)
         anonymous_commit_status_abilities(subject)
       elsif subject.is_a?(Project)
-        ProjectPolicy.new(subject).anonymous_abilities
+        ProjectPolicy.abilities(nil, subject)
       elsif subject.respond_to?(:project)
-        ProjectPolicy.new(subject.project).anonymous_abilities
+        ProjectPolicy.abilities(nil, subject.project)
       elsif subject.is_a?(Group) || subject.respond_to?(:group)
         anonymous_group_abilities(subject)
       elsif subject.is_a?(User)
@@ -191,7 +191,7 @@ class Ability
 
     def project_abilities(user, project)
       # temporary patch, deleteme before merge
-      ProjectPolicy.new(project).abilities(user).to_a
+      ProjectPolicy.abilities(user, project).to_a
     end
 
     def group_abilities(user, group)

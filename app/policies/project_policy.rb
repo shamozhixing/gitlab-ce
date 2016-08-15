@@ -154,7 +154,7 @@ class ProjectPolicy < BasePolicy
     end
   end
 
-  def rules(user)
+  def rules
     team_access!(user)
 
     owner = user.admin? ||

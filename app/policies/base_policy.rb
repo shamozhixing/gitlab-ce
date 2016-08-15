@@ -1,11 +1,17 @@
 class BasePolicy
-  def initialize(subject)
+  def self.abilities(user, subject)
+    new(user, subject).abilities
+  end
+
+  attr_reader :user, :subject
+  def initialize(user, subject)
+    @user = user
     @subject = subject
   end
 
-  def abilities(user)
-    return anonymous_abilities if user.nil?
-    collect_rules { rules(user) }
+  def abilities
+    return anonymous_abilities if @user.nil?
+    collect_rules { rules }
   end
 
   def anonymous_abilities
