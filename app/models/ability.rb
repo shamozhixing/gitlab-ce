@@ -46,23 +46,23 @@ class Ability
     end
 
     def allowed?(user, action, subject)
-      cached_allowed(user, subject).include?(action)
+      allowed(user, subject).include?(action)
+    end
+
+    def allowed(user, subject)
+      user_key = user ? user.id : 'anonymous'
+      key = "/ability/#{user_key}/#{subject.object_id}"
+      RequestStore[key] ||= Set.new(uncached_allowed(user, subject))
     end
 
     private
 
-    def allowed(user, subject)
-      return anonymous_abilities(user, subject) if user.nil?
+    def uncached_allowed(user, subject)
+      return anonymous_abilities(subject) if user.nil?
       return [] unless user.is_a?(User)
       return [] if user.blocked?
 
       abilities_by_subject_class(user: user, subject: subject)
-    end
-
-    def cached_allowed(user, subject)
-      user_key = user ? user.id : 'anonymous'
-      key = "/ability/#{user_key}/#{subject.object_id}"
-      RequestStore[key] ||= Set.new(allowed(user, subject))
     end
 
     def abilities_by_subject_class(user:, subject:)
