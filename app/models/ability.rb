@@ -70,7 +70,6 @@ class Ability
 
     def abilities_by_subject_class(user:, subject:)
       case subject
-      when PersonalSnippet then personal_snippet_abilities(user, subject)
       when Group then group_abilities(user, subject)
       when Namespace then namespace_abilities(user, subject)
       when GroupMember then group_member_abilities(user, subject)
@@ -84,11 +83,7 @@ class Ability
 
     # List of possible abilities for anonymous user
     def anonymous_abilities(subject)
-      if subject.is_a?(PersonalSnippet)
-        anonymous_personal_snippet_abilities(subject)
-      elsif subject.is_a?(ProjectSnippet)
-        anonymous_project_snippet_abilities(subject)
-      elsif subject.respond_to?(:project)
+      if subject.respond_to?(:project)
         ProjectPolicy.abilities(nil, subject.project)
       elsif subject.is_a?(Group) || subject.respond_to?(:group)
         anonymous_group_abilities(subject)
@@ -146,14 +141,6 @@ class Ability
       rules << :read_group if group.public?
 
       rules
-    end
-
-    def anonymous_personal_snippet_abilities(snippet)
-      if snippet.public?
-        [:read_personal_snippet]
-      else
-        []
-      end
     end
 
     def anonymous_user_abilities
@@ -225,24 +212,6 @@ class Ability
       end
 
       rules.flatten
-    end
-
-    def personal_snippet_abilities(user, snippet)
-      rules = []
-
-      if snippet.author == user
-        rules += [
-          :read_personal_snippet,
-          :update_personal_snippet,
-          :admin_personal_snippet
-        ]
-      end
-
-      if snippet.public? || (snippet.internal? && !user.external?)
-        rules << :read_personal_snippet
-      end
-
-      rules
     end
 
     def group_member_abilities(user, subject)
