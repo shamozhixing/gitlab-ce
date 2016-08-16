@@ -22,6 +22,10 @@ class BasePolicy
     collect_rules { anonymous_rules }
   end
 
+  def anonymous_rules
+    rules
+  end
+
   def delegate!(new_subject)
     @can.merge(BasePolicy.class_for(new_subject).abilities(@user, new_subject))
   end

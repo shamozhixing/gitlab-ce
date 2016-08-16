@@ -95,6 +95,8 @@ class Ability
         anonymous_commit_status_abilities(subject)
       elsif subject.is_a?(Project)
         ProjectPolicy.abilities(nil, subject)
+      elsif subject.is_a?(Issue)
+        IssuePolicy.abilities(nil, subject)
       elsif subject.respond_to?(:project)
         ProjectPolicy.abilities(nil, subject.project)
       elsif subject.is_a?(Group) || subject.respond_to?(:group)
