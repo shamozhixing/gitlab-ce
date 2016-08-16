@@ -6,7 +6,12 @@ class IssuePolicy < IssuablePolicy
   def rules
     super
 
-    cannot! :read_issue if @subject.confidential? && !can_read_confidential?
+    if @subject.confidential? && !can_read_confidential?
+      cannot! :read_issue
+      cannot! :admin_issue
+      cannot! :update_issue
+      cannot! :read_issue
+    end
   end
 
   private
