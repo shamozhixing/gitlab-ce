@@ -29,15 +29,21 @@ class BasePolicy
 
   def abilities
     return anonymous_abilities if @user.nil?
-    collect_rules { rules }
+    collect_rules { global_rules; rules }
   end
 
   def anonymous_abilities
-    collect_rules { anonymous_rules }
+    collect_rules { global_rules; anonymous_rules }
   end
 
   def anonymous_rules
     rules
+  end
+
+  def global_rules
+    return unless @user
+    can! :create_group if @user.can_create_group
+    can! :read_users_list
   end
 
   def delegate!(new_subject)
