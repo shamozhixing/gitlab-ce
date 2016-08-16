@@ -52,7 +52,7 @@ class Ability
     def allowed(user, subject)
       user_key = user ? user.id : 'anonymous'
       key = "/ability/#{user_key}/#{subject.object_id}"
-      RequestStore[key] ||= Set.new(uncached_allowed(user, subject))
+      RequestStore[key] ||= Set.new(uncached_allowed(user, subject)).freeze
     end
 
     private
