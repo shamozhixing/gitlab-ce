@@ -17,7 +17,7 @@ class Project < ActiveRecord::Base
 
   UNKNOWN_IMPORT_URL = 'http://unknown.git'
 
-  delegate :feature_available?, :builds_enabled?, :wiki_enabled, to: :project_feature, allow_nil: true
+  delegate :feature_enabled?, :builds_enabled?, :wiki_enabled?, :merge_requests_enabled?, to: :project_feature, allow_nil: true
 
   default_value_for :archived, false
   default_value_for :visibility_level, gitlab_config_features.visibility_level
@@ -27,7 +27,7 @@ class Project < ActiveRecord::Base
 
   after_create :ensure_dir_exist
   after_save :ensure_dir_exist, if: :namespace_id_changed?
-  after_initialize :build_project_feature
+  after_initialize :setup_project_feature
 
   # set last_activity_at to the same as created_at
   after_create :set_last_activity_at
@@ -60,8 +60,6 @@ class Project < ActiveRecord::Base
   belongs_to :creator, foreign_key: 'creator_id', class_name: 'User'
   belongs_to :group, -> { where(type: Group) }, foreign_key: 'namespace_id'
   belongs_to :namespace
-
-  has_one :board, dependent: :destroy
 
   has_one :last_event, -> {order 'events.created_at DESC'}, class_name: 'Event', foreign_key: 'project_id'
 
@@ -195,12 +193,10 @@ class Project < ActiveRecord::Base
   scope :for_milestones, ->(ids) { joins(:milestones).where('milestones.id' => ids).distinct }
   scope :with_push, -> { joins(:events).where('events.action = ?', Event::PUSHED) }
 
-  scope :with_builds_enabled, -> { joins(:project_feature).where('project_features.builds_access_level IS NULL or project_features.builds_access_level > 0') }
+  scope :with_builds_enabled, -> { joins('LEFT JOIN project_features ON projects.id = project_features.project_id').where('project_features.builds_access_level IS NULL or project_features.builds_access_level > 0') }
 
   scope :active, -> { joins(:issues, :notes, :merge_requests).order('issues.created_at, notes.created_at, merge_requests.created_at DESC') }
   scope :abandoned, -> { where('projects.last_activity_at < ?', 6.months.ago) }
-
-  scope :excluding_project, ->(project) { where.not(id: project) }
 
   state_machine :import_status, initial: :none do
     event :import_start do
@@ -1272,7 +1268,10 @@ class Project < ActiveRecord::Base
     end
   end
 
-  private
+  # Prevents the creation of project_feature record for every project
+  def setup_project_feature
+    build_project_feature unless project_feature
+  end
 
   def default_branch_protected?
     current_application_settings.default_branch_protection == Gitlab::Access::PROTECTION_FULL ||

@@ -1,4 +1,6 @@
 class CreateProjectFeatures < ActiveRecord::Migration
+  DOWNTIME = false
+
   def change
     create_table :project_features do |t|
       t.belongs_to :project, index: true
