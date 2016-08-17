@@ -34,14 +34,14 @@ Clicking on a pipeline will show the builds that were run for that pipeline.
 
 ## Badges
 
-There are build status and test coverage report badges available.
+Build status and test coverage report badges are available.
 
 Go to pipeline settings to see available badges and code you can use to embed
-badges in the `README.md` or your website.
+badges in the `README.md` or on the website.
 
 ### Build status badge
 
-You can access a build status badge image using following link:
+You can access a build status badge image using the following link:
 
 ```
 http://example.gitlab.com/namespace/project/badges/branch/build.svg
@@ -53,7 +53,7 @@ GitLab makes it possible to define the regular expression for coverage report,
 that each build log will be matched against. This means that each build in the
 pipeline can have the test coverage percentage value defined.
 
-You can access test coverage badge using following link:
+You can access the test coverage badge using following link:
 
 ```
 http://example.gitlab.com/namespace/project/badges/branch/coverage.svg
@@ -61,7 +61,7 @@ http://example.gitlab.com/namespace/project/badges/branch/coverage.svg
 
 If you would like to get the coverage report from the specific job, you can add
 a `job=coverage_job_name` parameter to the URL. For example, it is possible to
-use following Markdown code to embed the est coverage report into `README.md`:
+use following Markdown code to embed the test coverage report into `README.md`:
 
 ```markdown
 ![coverage](http://gitlab.com/gitlab-org/gitlab-ce/badges/master/coverage.svg?job=coverage)
