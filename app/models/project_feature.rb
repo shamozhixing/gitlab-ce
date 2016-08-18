@@ -32,7 +32,7 @@ class ProjectFeature < ActiveRecord::Base
     end
   end
 
-  def feature_enabled?(feature, user)
+  def feature_available?(feature, user)
     raise ArgumentError, 'invalid project feature' unless FEATURES.include?(feature)
 
     get_permission(user, public_send("#{feature}_access_level"))

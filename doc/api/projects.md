@@ -58,7 +58,12 @@ Parameters:
     "name_with_namespace": "Diaspora / Diaspora Client",
     "path": "diaspora-client",
     "path_with_namespace": "diaspora/diaspora-client",
+    "issues_enabled": true,
     "open_issues_count": 1,
+    "merge_requests_enabled": true,
+    "builds_enabled": true,
+    "wiki_enabled": true,
+    "snippets_enabled": false,
     "container_registry_enabled": false,
     "created_at": "2013-09-30T13:46:02Z",
     "last_activity_at": "2013-09-30T13:46:02Z",
@@ -103,7 +108,12 @@ Parameters:
     "name_with_namespace": "Brightbox / Puppet",
     "path": "puppet",
     "path_with_namespace": "brightbox/puppet",
+    "issues_enabled": true,
     "open_issues_count": 1,
+    "merge_requests_enabled": true,
+    "builds_enabled": true,
+    "wiki_enabled": true,
+    "snippets_enabled": false,
     "container_registry_enabled": false,
     "created_at": "2013-09-30T13:46:02Z",
     "last_activity_at": "2013-09-30T13:46:02Z",
@@ -223,7 +233,12 @@ Parameters:
   "name_with_namespace": "Diaspora / Diaspora Project Site",
   "path": "diaspora-project-site",
   "path_with_namespace": "diaspora/diaspora-project-site",
+  "issues_enabled": true,
   "open_issues_count": 1,
+  "merge_requests_enabled": true,
+  "builds_enabled": true,
+  "wiki_enabled": true,
+  "snippets_enabled": false,
   "container_registry_enabled": false,
   "created_at": "2013-09-30T13:46:02Z",
   "last_activity_at": "2013-09-30T13:46:02Z",
@@ -422,6 +437,11 @@ Parameters:
 - `path` (optional) - custom repository name for new project. By default generated based on name
 - `namespace_id` (optional) - namespace for the new project (defaults to user)
 - `description` (optional) - short project description
+- `issues_enabled` (optional)
+- `merge_requests_enabled` (optional)
+- `builds_enabled` (optional)
+- `wiki_enabled` (optional)
+- `snippets_enabled` (optional)
 - `container_registry_enabled` (optional)
 - `shared_runners_enabled` (optional)
 - `public` (optional) - if `true` same as setting visibility_level = 20
@@ -442,6 +462,11 @@ Parameters:
 - `user_id` (required) - user_id of owner
 - `name` (required) - new project name
 - `description` (optional) - short project description
+- `issues_enabled` (optional)
+- `merge_requests_enabled` (optional)
+- `builds_enabled` (optional)
+- `wiki_enabled` (optional)
+- `snippets_enabled` (optional)
 - `container_registry_enabled` (optional)
 - `shared_runners_enabled` (optional)
 - `public` (optional) - if `true` same as setting visibility_level = 20
@@ -464,6 +489,11 @@ Parameters:
 - `path` (optional) - repository name for project
 - `description` (optional) - short project description
 - `default_branch` (optional)
+- `issues_enabled` (optional)
+- `merge_requests_enabled` (optional)
+- `builds_enabled` (optional)
+- `wiki_enabled` (optional)
+- `snippets_enabled` (optional)
 - `container_registry_enabled` (optional)
 - `shared_runners_enabled` (optional)
 - `public` (optional) - if `true` same as setting visibility_level = 20
@@ -522,7 +552,12 @@ Example response:
   "name_with_namespace": "Diaspora / Diaspora Project Site",
   "path": "diaspora-project-site",
   "path_with_namespace": "diaspora/diaspora-project-site",
+  "issues_enabled": true,
   "open_issues_count": 1,
+  "merge_requests_enabled": true,
+  "builds_enabled": true,
+  "wiki_enabled": true,
+  "snippets_enabled": false,
   "container_registry_enabled": false,
   "created_at": "2013-09-30T13:46:02Z",
   "last_activity_at": "2013-09-30T13:46:02Z",
@@ -583,6 +618,12 @@ Example response:
   "name_with_namespace": "Diaspora / Diaspora Project Site",
   "path": "diaspora-project-site",
   "path_with_namespace": "diaspora/diaspora-project-site",
+  "issues_enabled": true,
+  "open_issues_count": 1,
+  "merge_requests_enabled": true,
+  "builds_enabled": true,
+  "wiki_enabled": true,
+  "snippets_enabled": false,
   "container_registry_enabled": false,
   "created_at": "2013-09-30T13:46:02Z",
   "last_activity_at": "2013-09-30T13:46:02Z",
@@ -652,7 +693,12 @@ Example response:
   "name_with_namespace": "Diaspora / Diaspora Project Site",
   "path": "diaspora-project-site",
   "path_with_namespace": "diaspora/diaspora-project-site",
+  "issues_enabled": true,
   "open_issues_count": 1,
+  "merge_requests_enabled": true,
+  "builds_enabled": true,
+  "wiki_enabled": true,
+  "snippets_enabled": false,
   "container_registry_enabled": false,
   "created_at": "2013-09-30T13:46:02Z",
   "last_activity_at": "2013-09-30T13:46:02Z",
@@ -733,7 +779,12 @@ Example response:
   "name_with_namespace": "Diaspora / Diaspora Project Site",
   "path": "diaspora-project-site",
   "path_with_namespace": "diaspora/diaspora-project-site",
+  "issues_enabled": true,
   "open_issues_count": 1,
+  "merge_requests_enabled": true,
+  "builds_enabled": true,
+  "wiki_enabled": true,
+  "snippets_enabled": false,
   "container_registry_enabled": false,
   "created_at": "2013-09-30T13:46:02Z",
   "last_activity_at": "2013-09-30T13:46:02Z",

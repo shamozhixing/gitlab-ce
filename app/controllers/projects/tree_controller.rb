@@ -51,7 +51,7 @@ class Projects::TreeController < Projects::ApplicationController
   end
 
   def module_enabled!
-    return if @repository.commit(@ref) && @project.feature_enabled?(:repository, current_user)
+    return if @repository.commit(@ref) && @project.feature_available?(:repository, current_user)
     render_404
   end
 end

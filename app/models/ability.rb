@@ -338,35 +338,35 @@ class Ability
     def project_disabled_features_rules(project, user = nil)
       rules = []
 
-      unless project.feature_enabled?(:issues, user)
+      unless project.feature_available?(:issues, user)
         rules += named_abilities('issue')
       end
 
-      unless project.feature_enabled?(:merge_requests, user)
+      unless project.feature_available?(:merge_requests, user)
         rules += named_abilities('merge_request')
       end
 
-      unless project.feature_enabled?(:issues, user) || project.feature_enabled?(:merge_requests, user)
+      unless project.feature_available?(:issues, user) || project.feature_available?(:merge_requests, user)
         rules += named_abilities('label')
         rules += named_abilities('milestone')
       end
 
-      unless project.feature_enabled?(:snippets, user)
+      unless project.feature_available?(:snippets, user)
         rules += named_abilities('project_snippet')
       end
 
-      unless project.feature_enabled?(:wiki, user)
+      unless project.feature_available?(:wiki, user)
         rules += named_abilities('wiki')
       end
 
-      unless project.feature_enabled?(:builds, user)
+      unless project.feature_available?(:builds, user)
         rules += named_abilities('build')
         rules += named_abilities('pipeline')
         rules += named_abilities('environment')
         rules += named_abilities('deployment')
       end
 
-      unless project.feature_enabled?(:repository, user)
+      unless project.feature_available?(:repository, user)
         rules += repo_abilities
       end
 

@@ -614,13 +614,13 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.datetime "locked_at"
     t.integer  "updated_by_id"
     t.string   "merge_error"
+    t.text     "merge_params"
     t.boolean  "merge_when_build_succeeds",    default: false, null: false
     t.integer  "merge_user_id"
     t.string   "merge_commit_sha"
     t.datetime "deleted_at"
     t.integer  "lock_version",                 default: 0,     null: false
     t.string   "in_progress_merge_commit_sha"
-    t.text     "merge_params"
   end
 
   add_index "merge_requests", ["assignee_id"], name: "index_merge_requests_on_assignee_id", using: :btree
@@ -971,8 +971,8 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.string   "noteable_type"
     t.string   "title"
     t.text     "description"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.boolean  "submitted_as_ham", default: false, null: false
   end
 
@@ -1036,20 +1036,19 @@ ActiveRecord::Schema.define(version: 20160819221833) do
     t.integer  "user_id"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
-    t.string   "name"
   end
 
   add_index "u2f_registrations", ["key_handle"], name: "index_u2f_registrations_on_key_handle", using: :btree
   add_index "u2f_registrations", ["user_id"], name: "index_u2f_registrations_on_user_id", using: :btree
 
   create_table "user_agent_details", force: :cascade do |t|
-    t.string   "user_agent",   null: false
-    t.string   "ip_address",   null: false
-    t.integer  "subject_id",   null: false
-    t.string   "subject_type", null: false
+    t.string   "user_agent",                   null: false
+    t.string   "ip_address",                   null: false
+    t.integer  "subject_id",                   null: false
+    t.string   "subject_type",                 null: false
     t.boolean  "submitted",    default: false, null: false
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
   end
 
   create_table "users", force: :cascade do |t|

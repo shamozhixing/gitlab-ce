@@ -11,12 +11,13 @@ class Project < ActiveRecord::Base
   include AfterCommitQueue
   include CaseSensitivity
   include TokenAuthenticatable
+  include ProjectFeaturesCompatibility
 
   extend Gitlab::ConfigHelper
 
   UNKNOWN_IMPORT_URL = 'http://unknown.git'
 
-  delegate :feature_enabled?, :builds_enabled?, :wiki_enabled, to: :project_feature, allow_nil: true
+  delegate :feature_available?, :builds_enabled?, :wiki_enabled, to: :project_feature, allow_nil: true
 
   default_value_for :archived, false
   default_value_for :visibility_level, gitlab_config_features.visibility_level
@@ -26,7 +27,7 @@ class Project < ActiveRecord::Base
 
   after_create :ensure_dir_exist
   after_save :ensure_dir_exist, if: :namespace_id_changed?
-  after_initialize :setup_project_feature
+  after_initialize :build_project_feature
 
   # set last_activity_at to the same as created_at
   after_create :set_last_activity_at
@@ -1106,7 +1107,7 @@ class Project < ActiveRecord::Base
   end
 
   def enable_ci
-    self.builds_enabled?
+    project_feature.update_attribute(:builds_access_level, ProjectFeature::ENABLED)
   end
 
   def any_runners?(&block)
