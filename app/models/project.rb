@@ -17,7 +17,7 @@ class Project < ActiveRecord::Base
 
   UNKNOWN_IMPORT_URL = 'http://unknown.git'
 
-  delegate :feature_enabled?, :builds_enabled?, :wiki_enabled?, :merge_requests_enabled?, to: :project_feature, allow_nil: true
+  delegate :feature_available?, :builds_enabled?, :wiki_enabled?, :merge_requests_enabled?, to: :project_feature, allow_nil: true
 
   default_value_for :archived, false
   default_value_for :visibility_level, gitlab_config_features.visibility_level
@@ -194,6 +194,8 @@ class Project < ActiveRecord::Base
   scope :with_push, -> { joins(:events).where('events.action = ?', Event::PUSHED) }
 
   scope :with_builds_enabled, -> { joins('LEFT JOIN project_features ON projects.id = project_features.project_id').where('project_features.builds_access_level IS NULL or project_features.builds_access_level > 0') }
+  scope :with_issues_enabled, -> { joins('LEFT JOIN project_features ON projects.id = project_features.project_id').where('project_features.issues_access_level IS NULL or project_features.issues_access_level > 0') }
+
 
   scope :active, -> { joins(:issues, :notes, :merge_requests).order('issues.created_at, notes.created_at, merge_requests.created_at DESC') }
   scope :abandoned, -> { where('projects.last_activity_at < ?', 6.months.ago) }

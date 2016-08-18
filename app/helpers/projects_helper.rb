@@ -406,6 +406,6 @@ module ProjectsHelper
     options.delete('Only team members') if @project.private?
 
     options = options_for_select(options, selected: @project.project_feature.public_send(field) || ProjectFeature::ENABLED)
-    content_tag(:select, options, name:"project[project_feature_attributes][#{field.to_s}]", id: "project_project_feature_attributes_#{field_name}", class: "pull-right form-control").html_safe
+    content_tag(:select, options, name:"project[project_feature_attributes][#{field.to_s}]", id: "project_project_feature_attributes_#{field.to_s}", class: "pull-right form-control").html_safe
   end
 end

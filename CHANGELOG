@@ -135,7 +135,6 @@ v 8.11.0 (unreleased)
   - Move to project dropdown with infinite scroll for better performance
   - Fix skip_repo parameter being ignored when destroying a namespace
   - Add all builds into stage/job dropdowns on builds page
-  - Fix skip_repo parameter being ignored when destroying a namespace
   - Change requests_profiles resource constraint to catch virtually any file
   - Bump gitlab_git to lazy load compare commits
   - Reduce number of queries made for merge_requests/:id/diffs
@@ -175,9 +174,6 @@ v 8.10.6
   - Restore "Largest repository" sort option on Admin > Projects page. !5797
   - Fix privilege escalation via project export.
   - Require administrator privileges to perform a project import.
-
-v 8.10.6 (unreleased)
-  - Fix import/export configuration missing some included attributes
 
 v 8.10.5
   - Add a data migration to fix some missing timestamps in the members table. !5670
