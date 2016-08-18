@@ -6,6 +6,10 @@ class Ability
       return [] unless user.is_a?(User)
       return [] if user.blocked?
 
+      abilities_by_subject_class(user: user, subject: subject)
+    end
+
+    def abilities_by_subject_class(user:, subject:)
       case subject
       when CommitStatus then commit_status_abilities(user, subject)
       when Project then project_abilities(user, subject)
@@ -47,6 +51,16 @@ class Ability
       end
     end
 
+    # Returns an Array of Issues that can be read by the given user.
+    #
+    # issues - The issues to reduce down to those readable by the user.
+    # user - The User for which to check the issues
+    def issues_readable_by_user(issues, user = nil)
+      return issues if user && user.admin?
+
+      issues.select { |issue| issue.visible_to_user?(user) }
+    end
+
     # List of possible abilities for anonymous user
     def anonymous_abilities(user, subject)
       if subject.is_a?(PersonalSnippet)
@@ -76,6 +90,8 @@ class Ability
       if project && project.public?
         rules = [
           :read_project,
+          :read_board,
+          :read_list,
           :read_wiki,
           :read_label,
           :read_milestone,
@@ -214,6 +230,8 @@ class Ability
         :read_project,
         :read_wiki,
         :read_issue,
+        :read_board,
+        :read_list,
         :read_label,
         :read_milestone,
         :read_project_snippet,
@@ -235,6 +253,7 @@ class Ability
         :update_issue,
         :admin_issue,
         :admin_label,
+        :admin_list,
         :read_commit_status,
         :read_build,
         :read_container_image,
@@ -386,6 +405,18 @@ class Ability
       return true if group.users.include?(user)
 
       GroupProjectsFinder.new(group).execute(user).any?
+    end
+
+    def can_edit_note?(user, note)
+      return false if !note.editable? || !user.present?
+      return true if note.author == user || user.admin?
+
+      if note.project
+        max_access_level = note.project.team.max_member_access(user.id)
+        max_access_level >= Gitlab::Access::MASTER
+      else
+        false
+      end
     end
 
     def namespace_abilities(user, namespace)

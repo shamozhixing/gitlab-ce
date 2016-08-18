@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 feature 'Projected Branches', feature: true, js: true do
+  include WaitForAjax
+
   let(:user) { create(:user, :admin) }
   let(:project) { create(:project) }
 
@@ -9,7 +11,7 @@ feature 'Projected Branches', feature: true, js: true do
   def set_protected_branch_name(branch_name)
     find(".js-protected-branch-select").click
     find(".dropdown-input-field").set(branch_name)
-    click_on "Create Protected Branch: #{branch_name}"
+    click_on("Create wildcard #{branch_name}")
   end
 
   describe "explicit protected branches" do
@@ -69,7 +71,10 @@ feature 'Projected Branches', feature: true, js: true do
       project.repository.add_branch(user, 'production-stable', 'master')
       project.repository.add_branch(user, 'staging-stable', 'master')
       project.repository.add_branch(user, 'development', 'master')
-      create(:protected_branch, project: project, name: "*-stable")
+
+      visit namespace_project_protected_branches_path(project.namespace, project)
+      set_protected_branch_name('*-stable')
+      click_on "Protect"
 
       visit namespace_project_protected_branches_path(project.namespace, project)
       click_on "2 matching branches"
@@ -78,6 +83,78 @@ feature 'Projected Branches', feature: true, js: true do
         expect(page).to have_content("production-stable")
         expect(page).to have_content("staging-stable")
         expect(page).not_to have_content("development")
+      end
+    end
+  end
+
+  describe "access control" do
+    ProtectedBranch::PushAccessLevel.human_access_levels.each do |(access_type_id, access_type_name)|
+      it "allows creating protected branches that #{access_type_name} can push to" do
+        visit namespace_project_protected_branches_path(project.namespace, project)
+        set_protected_branch_name('master')
+        within('.new_protected_branch') do
+          allowed_to_push_button = find(".js-allowed-to-push")
+
+          unless allowed_to_push_button.text == access_type_name
+            allowed_to_push_button.click
+            within(".dropdown.open .dropdown-menu") { click_on access_type_name }
+          end
+        end
+        click_on "Protect"
+
+        expect(ProtectedBranch.count).to eq(1)
+        expect(ProtectedBranch.last.push_access_levels.map(&:access_level)).to eq([access_type_id])
+      end
+
+      it "allows updating protected branches so that #{access_type_name} can push to them" do
+        visit namespace_project_protected_branches_path(project.namespace, project)
+        set_protected_branch_name('master')
+        click_on "Protect"
+
+        expect(ProtectedBranch.count).to eq(1)
+
+        within(".protected-branches-list") do
+          find(".js-allowed-to-push").click
+          within('.js-allowed-to-push-container') { click_on access_type_name }
+        end
+
+        wait_for_ajax
+        expect(ProtectedBranch.last.push_access_levels.map(&:access_level)).to include(access_type_id)
+      end
+    end
+
+    ProtectedBranch::MergeAccessLevel.human_access_levels.each do |(access_type_id, access_type_name)|
+      it "allows creating protected branches that #{access_type_name} can merge to" do
+        visit namespace_project_protected_branches_path(project.namespace, project)
+        set_protected_branch_name('master')
+        within('.new_protected_branch') do
+          allowed_to_merge_button = find(".js-allowed-to-merge")
+
+          unless allowed_to_merge_button.text == access_type_name
+            allowed_to_merge_button.click
+            within(".dropdown.open .dropdown-menu") { click_on access_type_name }
+          end
+        end
+        click_on "Protect"
+
+        expect(ProtectedBranch.count).to eq(1)
+        expect(ProtectedBranch.last.merge_access_levels.map(&:access_level)).to eq([access_type_id])
+      end
+
+      it "allows updating protected branches so that #{access_type_name} can merge to them" do
+        visit namespace_project_protected_branches_path(project.namespace, project)
+        set_protected_branch_name('master')
+        click_on "Protect"
+
+        expect(ProtectedBranch.count).to eq(1)
+
+        within(".protected-branches-list") do
+          find(".js-allowed-to-merge").click
+          within('.js-allowed-to-merge-container') { click_on access_type_name }
+        end
+
+        wait_for_ajax
+        expect(ProtectedBranch.last.merge_access_levels.map(&:access_level)).to include(access_type_id)
       end
     end
   end

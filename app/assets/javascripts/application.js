@@ -41,6 +41,7 @@
 /*= require date.format */
 /*= require_directory ./behaviors */
 /*= require_directory ./blob */
+/*= require_directory ./templates */
 /*= require_directory ./commit */
 /*= require_directory ./extensions */
 /*= require_directory ./lib/utils */
@@ -49,6 +50,7 @@
 /*= require fuzzaldrin-plus */
 
 (function() {
+  var PINNED_NAV_WIDTH = 1024;
   window.slugify = function(text) {
     return text.replace(/[^-a-zA-Z0-9]+/g, '_').toLowerCase();
   };
@@ -223,8 +225,11 @@
       return $('.navbar-toggle').toggleClass('active');
     });
     $body.on("click", ".js-toggle-diff-comments", function(e) {
-      $(this).toggleClass('active');
-      $(this).closest(".diff-file").find(".notes_holder").toggle();
+      var $this = $(this);
+      var showComments = $this.hasClass('active');
+
+      $this.toggleClass('active');
+      $this.closest(".diff-file").find(".notes_holder").toggle(showComments);
       return e.preventDefault();
     });
     $document.off("click", '.js-confirm-danger');
@@ -279,7 +284,7 @@
     gl.awardsHandler = new AwardsHandler();
     checkInitialSidebarSize();
     new Aside();
-    if ($window.width() < 1024 && $.cookie('pin_nav') === 'true') {
+    if ($window.width() < PINNED_NAV_WIDTH && $.cookie('pin_nav') === 'true') {
       $.cookie('pin_nav', 'false', {
         path: '/',
         expires: 365 * 10
@@ -288,8 +293,8 @@
       $('.navbar-fixed-top').removeClass('header-pinned-nav');
     }
 
-    updatePinTooltip = function ($pinBtn, doPinNav) {
-      tooltipText = 'Pin navigation';
+    function updatePinTooltip($pinBtn, doPinNav) {
+      var tooltipText = 'Pin navigation';
       if ($.cookie('pin_nav') === 'true' || doPinNav) {
         tooltipText = 'Unpin navigation';
       }
@@ -301,26 +306,27 @@
         .tooltip('fixTitle');
     }
 
-    debouncedResize = _.debounce(function () {
-      $pinBtn = $('.js-nav-pin');
-      doPinNav = $('.page-with-sidebar').is(':not(.page-sidebar-pinned)');
+    var $pageSidebar = $('.page-with-sidebar'),
+        $navBarTop = $('.navbar-fixed-top'),
+        widnowResizeTimout;
+    $window.off('resize.nav')
+      .on('resize.nav', function () {
+        clearTimeout(widnowResizeTimout);
+        widnowResizeTimout = setTimeout(function () {
+          var pinnedCookie = $.cookie('pin_nav'),
+              windowWidth = $window.width();
 
-      if ($window.width() < 1024 && $.cookie('pin_nav') === 'true' && !doPinNav) {
-        $('.page-with-sidebar')
-          .toggleClass('page-sidebar-collapsed page-sidebar-expanded')
-          .removeClass('page-sidebar-pinned')
-        $('.navbar-fixed-top').removeClass('header-pinned-nav');
-      } else if ($window.width() >= 1024 && $.cookie('pin_nav') === 'true' && doPinNav) {
-        $('.page-with-sidebar')
-          .toggleClass('page-sidebar-collapsed page-sidebar-expanded')
-          .addClass('page-sidebar-pinned')
-        $('.navbar-fixed-top').addClass('header-pinned-nav');
-      }
-    });
-
-    $window
-      .off('resize.nav')
-      .on('resize.nav', debouncedResize);
+          if (windowWidth < PINNED_NAV_WIDTH && pinnedCookie === 'true') {
+            $pageSidebar.addClass('page-sidebar-collapsed')
+              .removeClass('page-sidebar-pinned page-sidebar-expanded');
+            $navBarTop.removeClass('header-pinned-nav');
+          } else if (windowWidth >= PINNED_NAV_WIDTH && pinnedCookie === 'true') {
+            $pageSidebar.removeClass('page-sidebar-collapsed')
+              .addClass('page-sidebar-pinned page-sidebar-expanded');
+            $navBarTop.addClass('header-pinned-nav');
+          }
+        }, 250);
+      });
 
     return $document.off('click', '.js-nav-pin').on('click', '.js-nav-pin', function(e) {
       var $page, $pinBtn, $tooltip, $topNav, doPinNav, tooltipText;
@@ -344,6 +350,8 @@
       });
       updatePinTooltip($pinBtn, doPinNav);
     });
-  });
 
+    // Custom time ago
+    gl.utils.shortTimeAgo($('.js-short-timeago'));
+  });
 }).call(this);

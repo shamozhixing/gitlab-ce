@@ -55,6 +55,7 @@
           shortcut_handler = new ShortcutsNavigation();
           new GLForm($('.issue-form'));
           new IssuableForm($('.issue-form'));
+          new IssuableTemplateSelectors();
           break;
         case 'projects:merge_requests:new':
         case 'projects:merge_requests:edit':
@@ -62,6 +63,7 @@
           shortcut_handler = new ShortcutsNavigation();
           new GLForm($('.merge-request-form'));
           new IssuableForm($('.merge-request-form'));
+          new IssuableTemplateSelectors();
           break;
         case 'projects:tags:new':
           new ZenMode();
@@ -86,6 +88,8 @@
           new ZenMode();
           new MergedButtons();
           break;
+        case "projects:merge_requests:conflicts":
+          window.mcui = new MergeConflictResolver()
         case 'projects:merge_requests:index':
           shortcut_handler = new ShortcutsNavigation();
           Issuable.init();
@@ -171,6 +175,11 @@
           break;
         case 'search:show':
           new Search();
+          break;
+        case 'projects:protected_branches:index':
+          new gl.ProtectedBranchCreate();
+          new gl.ProtectedBranchEditList();
+          break;
       }
       switch (path.first()) {
         case 'admin':
@@ -181,6 +190,12 @@
               break;
             case 'projects':
               new NamespaceSelects();
+              break;
+            case 'labels':
+              switch (path[2]) {
+                case 'edit':
+                  new Labels();
+              }
           }
           break;
         case 'dashboard':
@@ -206,6 +221,7 @@
               new ProjectNew();
               break;
             case 'show':
+              new Star();
               new ProjectNew();
               new ProjectShow();
               new NotificationsDropdown();
