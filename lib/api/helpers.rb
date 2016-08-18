@@ -102,7 +102,7 @@ module API
       label || not_found!('Label')
     end
 
-    def get_label_ids(labels)
+    def find_or_create_label_ids(labels)
       labels.split(",").map do |label_name|
         user_project.labels.create_with(color: Label::DEFAULT_COLOR)
                            .find_or_create_by(title: label_name.strip)
