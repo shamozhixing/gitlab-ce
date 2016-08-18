@@ -15,6 +15,7 @@ class IssuePolicy < IssuablePolicy
   end
 
   private
+
   def can_read_confidential?
     return false unless @user
     return true if @user.admin?
