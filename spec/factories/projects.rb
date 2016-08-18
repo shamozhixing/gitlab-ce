@@ -22,6 +22,22 @@ FactoryGirl.define do
       visibility_level Gitlab::VisibilityLevel::PRIVATE
     end
 
+    trait :with_custom_hooks do
+      after :create do |project|
+        custom_hooks_path = File.join(project.repository.path_to_repo, "custom_hooks")
+        FileUtils.mkdir_p(custom_hooks_path)
+        FileUtils.touch(File.join(custom_hooks_path, "dummy.txt"))
+      end
+    end
+
+    trait :with_annex do
+      after :create do |project|
+        annex_path = File.join(project.repository.path_to_repo, "annex")
+        FileUtils.mkdir_p(annex_path)
+        FileUtils.touch(File.join(annex_path, "dummy.txt"))
+      end
+    end
+
     trait :empty_repo do
       after(:create) do |project|
         project.create_repository

@@ -156,14 +156,11 @@ module Backup
       File.join(Gitlab.config.backup.path, "repositories")
     end
 
-    def folder_exists?(project, folder)
-      path = "#{path_to_repo(project)}/#{folder}"
-      Dir.exists?(path)
-    end
-
-    def in_path(path, directories)
-      directories.map do |dir|
-        yield(dir) if Dir.exists?(File.join(path, dir))
+    def in_path(path, entries)
+      if Dir.exist?(path)
+        entries.map do |entry|
+          yield(entry.sub(/.tar\z/, "")) if Dir.entries(path).include?(entry)
+        end
       end
     end
 
@@ -177,9 +174,6 @@ module Backup
 
     def silent
       {err: '/dev/null', out: '/dev/null'}
-    end
-
-    def execute(cmd)
     end
 
     private

@@ -97,6 +97,46 @@ describe 'gitlab:app namespace rake task' do
       @backup_tar = tars_glob.first
     end
 
+    context 'project uses git-annex' do
+      let(:project) { create(:project, :with_annex) }
+
+      after do
+        FileUtils.rm(@backup_tar)
+      end
+
+      it 'creates annex.tar and project bundle' do
+        user_backup_path = "repositories/#{project.path_with_namespace}"
+
+        create_backup
+        tar_contents, exit_status = Gitlab::Popen.popen(%W{tar -tvf #{@backup_tar}})
+
+        expect(exit_status).to eq(0)
+        expect(tar_contents).to match(user_backup_path)
+        expect(tar_contents).to match("#{user_backup_path}/annex.tar")
+        expect(tar_contents).to match("#{user_backup_path}.bundle")
+      end
+    end
+
+    context 'project uses custom_hooks' do
+      let(:project) { create(:project, :with_custom_hooks) }
+
+      after do
+        FileUtils.rm(@backup_tar)
+      end
+
+      it 'creates custom_hooks.tar and project bundle' do
+        user_backup_path = "repositories/#{project.path_with_namespace}"
+
+        create_backup
+        tar_contents, exit_status = Gitlab::Popen.popen(%W{tar -tvf #{@backup_tar}})
+
+        expect(exit_status).to eq(0)
+        expect(tar_contents).to match(user_backup_path)
+        expect(tar_contents).to match("#{user_backup_path}/custom_hooks.tar")
+        expect(tar_contents).to match("#{user_backup_path}.bundle")
+      end
+    end
+
     context 'tar creation' do
       before do
         create_backup
