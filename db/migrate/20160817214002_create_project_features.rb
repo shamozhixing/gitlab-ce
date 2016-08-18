@@ -11,7 +11,7 @@ class CreateProjectFeatures < ActiveRecord::Migration
       t.integer  :repository_access_level
       t.integer  :builds_access_level
 
-      t.timestamps null: false
+      t.timestamps
     end
   end
 end

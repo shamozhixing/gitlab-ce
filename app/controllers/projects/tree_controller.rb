@@ -12,6 +12,8 @@ class Projects::TreeController < Projects::ApplicationController
   before_action :module_enabled!
 
   def show
+    return render_404 unless @repository.commit(@ref)
+
     if tree.entries.empty?
       if @repository.blob_at(@commit.id, @path)
         redirect_to(
@@ -51,7 +53,7 @@ class Projects::TreeController < Projects::ApplicationController
   end
 
   def module_enabled!
-    return if @repository.commit(@ref) && @project.feature_available?(:repository, current_user)
+    return if @project.feature_available?(:repository, current_user)
     render_404
   end
 end

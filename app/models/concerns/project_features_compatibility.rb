@@ -1,9 +1,9 @@
- # Makes api V3 compatible with old project features permissions methods
- #
- # After migration issues_enabled merge_requests_enabled builds_enabled snippets_enabled and wiki_enabled
- # fields to a new table "project_features", support for the old fields is still needed.
+# Makes api V3 compatible with old project features permissions methods
+#
+# After migrating issues_enabled merge_requests_enabled builds_enabled snippets_enabled and wiki_enabled
+# fields to a new table "project_features", support for the old fields is still needed in the API.
 
- module ProjectFeaturesCompatibility
+module ProjectFeaturesCompatibility
   extend ActiveSupport::Concern
 
   def wiki_enabled=(value)
@@ -35,4 +35,3 @@
     project_feature.update_attribute(field, access_level)
   end
 end
-

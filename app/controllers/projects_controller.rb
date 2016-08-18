@@ -304,10 +304,12 @@ class ProjectsController < Projects::ApplicationController
 
   def project_params
     project_feature_attributes =
-      { project_feature_attributes: [
-          :issues_access_level, :builds_access_level,
-          :wiki_access_level, :merge_requests_access_level, :repository_access_level, :snippets_access_level
-        ]
+      {
+        project_feature_attributes:
+          [
+            :issues_access_level, :builds_access_level,
+            :wiki_access_level, :merge_requests_access_level, :repository_access_level, :snippets_access_level
+          ]
       }
 
     params.require(:project).permit(

@@ -614,10 +614,12 @@ class Ability
     end
 
     def repo_abilities
-      [ :download_code,
+      [
+        :download_code,
         :fork_project,
         :read_commit_status,
-        :read_pipeline
+        :read_pipeline,
+        :push_code
       ]
     end
 
