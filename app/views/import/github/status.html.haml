@@ -47,13 +47,11 @@
           %td.import-target
             %fieldset.row
             .input-group
-              .col-xs-12.col-sm-6
+              .col-xs-11.col-sm-5.project-path
                 - if current_user.can_select_namespace?
-                  .input-group-addon
-                    = root_url
-                  = select_tag :namespace_id, namespaces_options(params[:namespace_id] || :current_user, display_path: true), {class: 'select2 js-select-namespace', tabindex: 1}
+                  = select_tag :namespace_id, namespaces_options(params[:namespace_id] || :current_user, display_path: true), {class: 'project-path select2 js-select-namespace', tabindex: 1}
                 - else
-                  .input-group-addon.static-namespace
+                  .input-group-addon.static-namespace.project-path
                     #{root_url}#{current_user.username}/
               .col-xs-12.col-sm-6.project-path
                 = text_field_tag :path, repo.name, class: "form-control", tabindex: 2, autofocus: true, required: true
