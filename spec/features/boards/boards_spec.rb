@@ -143,13 +143,12 @@ describe 'Issue Boards', feature: true, js: true do
       wait_for_vue_resource
 
       page.within(find('.board', match: :first)) do
-        expect(page.find('.board-header')).to have_content('20')
+        expect(page.find('.board-header')).to have_content('56')
         expect(page).to have_selector('.card', count: 20)
 
         evaluate_script("document.querySelectorAll('.board .board-list')[0].scrollTop = document.querySelectorAll('.board .board-list')[0].scrollHeight")
         wait_for_vue_resource(spinner: false)
 
-        expect(page.find('.board-header')).to have_content('40')
         expect(page).to have_selector('.card', count: 40)
       end
     end
@@ -466,12 +465,11 @@ describe 'Issue Boards', feature: true, js: true do
         wait_for_vue_resource
 
         page.within(find('.board', match: :first)) do
-          expect(page.find('.board-header')).to have_content('20')
+          expect(page.find('.board-header')).to have_content('51')
           expect(page).to have_selector('.card', count: 20)
 
           evaluate_script("document.querySelectorAll('.board .board-list')[0].scrollTop = document.querySelectorAll('.board .board-list')[0].scrollHeight")
 
-          expect(page.find('.board-header')).to have_content('40')
           expect(page).to have_selector('.card', count: 40)
         end
       end

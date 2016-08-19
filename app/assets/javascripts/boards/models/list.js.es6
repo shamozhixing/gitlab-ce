@@ -11,6 +11,7 @@ class List {
     this.loading = true;
     this.loadingMore = false;
     this.issues = [];
+    this.issuesSize = 0;
 
     if (obj.label) {
       this.label = new ListLabel(obj.label);
@@ -80,12 +81,13 @@ class List {
       .then((resp) => {
         const data = resp.json();
         this.loading = false;
+        this.issuesSize = data.size;
 
         if (emptyIssues) {
           this.issues = [];
         }
 
-        this.createIssues(data);
+        this.createIssues(data.issues);
       });
   }
 
@@ -103,6 +105,7 @@ class List {
     }
 
     if (listFrom) {
+      this.issuesSize++;
       gl.boardService.moveIssue(issue.id, listFrom.id, this.id);
     }
   }
@@ -116,6 +119,7 @@ class List {
       const matchesRemove = removeIssue.id === issue.id;
 
       if (matchesRemove) {
+        this.issuesSize--;
         issue.removeLabel(this.label);
       }
 
