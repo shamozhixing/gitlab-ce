@@ -611,10 +611,12 @@ class Project < ActiveRecord::Base
   end
 
   def new_issue_address(author)
-    if Gitlab::IncomingEmail.enabled? && author
-      Gitlab::IncomingEmail.reply_address(
-        "#{path_with_namespace}+#{author.authentication_token}")
-    end
+    return unless Gitlab::IncomingEmail.enabled? && author
+
+    author.ensure_incoming_email_token!
+
+    Gitlab::IncomingEmail.reply_address(
+      "#{path_with_namespace}+#{author.incoming_email_token}")
   end
 
   def build_commit_note(commit)
