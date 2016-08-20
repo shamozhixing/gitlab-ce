@@ -342,6 +342,7 @@ Rails.application.routes.draw do
       get :applications, to: 'oauth/applications#index'
 
       put :reset_private_token
+      put :reset_incoming_email_token
       put :update_username
     end
 
