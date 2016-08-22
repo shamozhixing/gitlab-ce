@@ -47,7 +47,12 @@ module Gitlab
 
       def tag_controller(trans, env)
         controller   = env[CONTROLLER_KEY]
-        trans.action = "#{controller.class.name}##{controller.action_name}"
+        mime_type = Mime::Type.lookup(controller.content_type)
+        if mime_type.html?
+          trans.action = "#{controller.class.name}##{controller.action_name}"
+        else
+          trans.action = "#{controller.class.name}##{controller.action_name}.#{mime_type.to_sym}"
+        end
       end
 
       def tag_endpoint(trans, env)
