@@ -11,6 +11,8 @@ module Members
       unless member && can?(current_user, "destroy_#{member.type.underscore}".to_sym, member)
         raise Gitlab::Access::AccessDeniedError
       end
+
+      member.group.expire_group_member_count
       AuthorizedDestroyService.new(member, current_user).execute
     end
   end

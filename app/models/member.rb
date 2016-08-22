@@ -92,6 +92,8 @@ class Member < ActiveRecord::Base
 
         member.save
       end
+
+      member.group.expire_group_member_count
     end
 
     private

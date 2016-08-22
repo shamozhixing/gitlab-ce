@@ -149,6 +149,14 @@ class Group < Namespace
     end
   end
 
+  def group_member_count(force: false)
+    Rails.cache.fetch(:group_member_count) { group_members.count }
+  end
+
+  def expire_group_member_count
+    Rails.cache.delete(:group_member_count)
+  end
+
   def post_create_hook
     Gitlab::AppLogger.info("Group \"#{name}\" was created")
 
